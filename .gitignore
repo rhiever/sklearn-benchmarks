@@ -60,3 +60,7 @@ target/
 
 #Ipython Notebook
 .ipynb_checkpoints
+
+data/20newsgroups.csv.gz
+
+data/cifar-10.csv.gz
