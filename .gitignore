@@ -68,3 +68,5 @@ data/cifar-10.csv.gz
 data/cifar-100-coarse.csv.gz
 
 data/cifar-100-fine.csv.gz
+
+data/svhn.csv.gz
