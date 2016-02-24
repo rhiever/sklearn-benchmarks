@@ -1,7 +1,9 @@
-'''
+"""
 This script downloads all of the data for the benchmark to the 'data' directory.
+
 You will need an internet connection to run this script.
-'''
+"""
+
 from __future__ import print_function
 import os
 import requests
