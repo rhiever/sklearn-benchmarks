@@ -1,5 +1,7 @@
 # scikit-learn benchmarks
 
+[![Join the chat at https://gitter.im/rhiever/sklearn-benchmarks](https://badges.gitter.im/rhiever/sklearn-benchmarks.svg)](https://gitter.im/rhiever/sklearn-benchmarks?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
+
 A centralized repository to report scikit-learn model performance across a variety of parameter settings and data sets.
 
 ## Downloading the benchmark data
