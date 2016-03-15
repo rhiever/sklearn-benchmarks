@@ -27,14 +27,16 @@ for (n_neighbors, weights) in itertools.product([1, 5, 10, 50, 100],
         testing_classes = input_data.loc[testing_indices, 'class'].values
 
         ss = StandardScaler()
-        training_features = ss.fit_transform(training_features)
-        testing_features = ss.transform(testing_features)
+        training_features = ss.fit_transform(training_features.astype(float))
+        testing_features = ss.transform(testing_features.astype(float))
 
         # Create and fit the model on the training data
         try:
             clf = KNeighborsClassifier(n_neighbors=n_neighbors, weights=weights)
             clf.fit(training_features, training_classes)
             testing_score = clf.score(testing_features, testing_classes)
+        except KeyboardInterrupt:
+            sys.exit(1)
         except:
             continue
     

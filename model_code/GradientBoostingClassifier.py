@@ -32,8 +32,8 @@ for (loss, learning_rate, n_estimators,
         testing_classes = input_data.loc[testing_indices, 'class'].values
 
         ss = StandardScaler()
-        training_features = ss.fit_transform(training_features)
-        testing_features = ss.transform(testing_features)
+        training_features = ss.fit_transform(training_features.astype(float))
+        testing_features = ss.transform(testing_features.astype(float))
 
         # Create and fit the model on the training data
         try:
@@ -42,6 +42,8 @@ for (loss, learning_rate, n_estimators,
                                          max_features=max_features, warm_start=warm_start)
             clf.fit(training_features, training_classes)
             testing_score = clf.score(testing_features, testing_classes)
+        except KeyboardInterrupt:
+            sys.exit(1)
         except:
             continue
     

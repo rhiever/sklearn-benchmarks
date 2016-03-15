@@ -35,21 +35,22 @@ for (C, gamma, kernel, degree) in itertools.product([0.01, 0.1, 0.5, 1.0, 10.0, 
         testing_classes = input_data.loc[testing_indices, 'class'].values
 
         ss = StandardScaler()
-        training_features = ss.fit_transform(training_features)
-        testing_features = ss.transform(testing_features)
+        training_features = ss.fit_transform(training_features.astype(float))
+        testing_features = ss.transform(testing_features.astype(float))
 
         # Create and fit the model on the training data
         try:
             clf = SVC(C=C, gamma=gamma, kernel=kernel, degree=degree)
             clf.fit(training_features, training_classes)
             testing_score = clf.score(testing_features, testing_classes)
+        except KeyboardInterrupt:
+            sys.exit(1)
         except:
             continue
     
         param_string = ''
         param_string += 'C={},'.format(C)
         param_string += 'gamma={},'.format(gamma)
-        param_string += 'shrinking={},'.format(shrinking)
         param_string += 'kernel={},'.format(kernel)
         param_string += 'degree={}'.format(degree)
     
