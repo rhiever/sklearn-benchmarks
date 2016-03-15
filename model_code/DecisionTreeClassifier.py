@@ -2,6 +2,7 @@ import sys
 import pandas as pd
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.cross_validation import StratifiedShuffleSplit
+from sklearn.preprocessing import StandardScaler
 import itertools
 
 dataset = sys.argv[1]
@@ -25,7 +26,11 @@ for (max_depth, max_features, criterion) in itertools.product([1, 2, 3, 4, 5, 10
     
         testing_features = input_data.loc[testing_indices].drop('class', axis=1).values
         testing_classes = input_data.loc[testing_indices, 'class'].values
-    
+
+        ss = StandardScaler()
+        training_features = ss.fit_transform(training_features)
+        testing_features = ss.transform(testing_features)
+
         # Create and fit the model on the training data
         try:
             clf = DecisionTreeClassifier(max_depth=max_depth, max_features=max_features, criterion=criterion)

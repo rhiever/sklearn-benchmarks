@@ -2,6 +2,7 @@ import sys
 import pandas as pd
 from sklearn.ensemble import GradientBoostingClassifier
 from sklearn.cross_validation import StratifiedShuffleSplit
+from sklearn.preprocessing import StandardScaler
 import itertools
 
 dataset = sys.argv[1]
@@ -29,7 +30,11 @@ for (loss, learning_rate, n_estimators,
     
         testing_features = input_data.loc[testing_indices].drop('class', axis=1).values
         testing_classes = input_data.loc[testing_indices, 'class'].values
-    
+
+        ss = StandardScaler()
+        training_features = ss.fit_transform(training_features)
+        testing_features = ss.transform(testing_features)
+
         # Create and fit the model on the training data
         try:
             clf = GradientBoostingClassifier(loss=loss, learning_rate=learning_rate,
