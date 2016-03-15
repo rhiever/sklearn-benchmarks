@@ -9,7 +9,7 @@ dataset = sys.argv[1]
 # Read the data set into memory
 input_data = pd.read_csv(dataset, compression='gzip', sep='\t')
 
-for (n_neighbors, weights) in itertools.product([1, 5, 10, 50,100],
+for (n_neighbors, weights) in itertools.product([1, 5, 10, 50, 100],
                                                 ['uniform', 'distance']):
     for dataset_repeat in range(1, 31):
         # Divide the data set into a training and testing sets, each time with a different RNG seed

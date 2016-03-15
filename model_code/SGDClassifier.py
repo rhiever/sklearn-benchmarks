@@ -5,11 +5,6 @@ from sklearn.cross_validation import StratifiedShuffleSplit
 import itertools
 
 dataset = sys.argv[1]
-loss = sys.argv[2]
-penalty = sys.argv[3]
-alpha = float(sys.argv[4])
-learning_rate = sys.argv[5]
-warm_start = bool(sys.argv[6])
 
 # Read the data set into memory
 input_data = pd.read_csv(dataset, compression='gzip', sep='\t')
