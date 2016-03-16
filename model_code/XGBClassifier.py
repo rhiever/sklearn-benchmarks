@@ -11,7 +11,7 @@ dataset = sys.argv[1]
 input_data = pd.read_csv(dataset, compression='gzip', sep='\t')
 
 for (learning_rate, n_estimators, max_depth) in itertools.product([0.01, 0.1, 0.5, 1.0, 10.0, 50.0, 100.0],
-                                                                  [10, 50, 100, 500, 1000],
+                                                                  [10, 50, 100, 250],
                                                                   [1, 2, 3, 4, 5, 10, 20, 50, None]):
     for dataset_repeat in range(1, 31):
         # Divide the data set into a training and testing sets, each time with a different RNG seed

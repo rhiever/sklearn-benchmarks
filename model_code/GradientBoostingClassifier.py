@@ -51,7 +51,7 @@ for (loss, learning_rate, n_estimators,
         param_string += 'learning_rate={},'.format(learning_rate)
         param_string += 'n_estimators={},'.format(n_estimators)
         param_string += 'max_depth={},'.format(max_depth)
-        param_string += 'max_features={},'.format(max_features)
+        param_string += 'max_features={}'.format(max_features)
     
         out_text = '\t'.join([dataset.split('/')[-1][:-7],
                               'GradientBoostingClassifier',

@@ -46,8 +46,8 @@ for (C, loss, penalty, dual, tol) in itertools.product([0.01, 0.1, 0.5, 1.0, 10.
         param_string = ''
         param_string += 'C={},'.format(C)
         param_string += 'loss={},'.format(loss)
-        param_string += 'penalty={}'.format(penalty)
-        param_string += 'dual={}'.format(dual)
+        param_string += 'penalty={},'.format(penalty)
+        param_string += 'dual={},'.format(dual)
         param_string += 'tol={}'.format(tol)
     
         out_text = '\t'.join([dataset.split('/')[-1][:-7],

@@ -47,7 +47,7 @@ for (n_estimators, max_depth, max_features, criterion) in itertools.product([10,
         param_string += 'n_estimators={},'.format(n_estimators)
         param_string += 'max_depth={},'.format(max_depth)
         param_string += 'max_features={},'.format(max_features)
-        param_string += 'criterion={},'.format(criterion)
+        param_string += 'criterion={}'.format(criterion)
     
         out_text = '\t'.join([dataset.split('/')[-1][:-7],
                               'RandomForestClassifier',

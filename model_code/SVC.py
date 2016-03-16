@@ -11,9 +11,9 @@ dataset = sys.argv[1]
 input_data = pd.read_csv(dataset, compression='gzip', sep='\t')
 
 for (C, gamma, kernel, degree) in itertools.product([0.01, 0.1, 0.5, 1.0, 10.0, 50.0, 100.0],
-                                                               [0.01, 0.1, 0.5, 1.0, 10.0, 50.0, 100.0, 'auto'],
-                                                               ['linear', 'poly', 'rbf', 'sigmoid', 'precomputed'],
-                                                               [2, 3, 4]):
+                                                    [0.01, 0.1, 0.5, 1.0, 10.0, 50.0, 100.0, 'auto'],
+                                                    ['linear', 'poly', 'rbf', 'sigmoid', 'precomputed'],
+                                                    [2, 3, 4]):
     if kernel != 'poly' and degree > 2:
         continue
 

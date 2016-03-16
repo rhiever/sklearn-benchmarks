@@ -46,7 +46,7 @@ for (loss, penalty, alpha, learning_rate) in itertools.product(['hinge', 'log', 
         param_string += 'loss={},'.format(loss)
         param_string += 'penalty={},'.format(penalty)
         param_string += 'alpha={},'.format(alpha)
-        param_string += 'learning_rate={},'.format(learning_rate)
+        param_string += 'learning_rate={}'.format(learning_rate)
     
         out_text = '\t'.join([dataset.split('/')[-1][:-7],
                               'SGDClassifier',
