@@ -10,12 +10,10 @@ dataset = sys.argv[1]
 # Read the data set into memory
 input_data = pd.read_csv(dataset, compression='gzip', sep='\t')
 
-for (loss, penalty, alpha,
-     learning_rate, warm_start) in itertools.product(['hinge', 'log', 'modified_huber', 'squared_hinge', 'perceptron'],
-                                                     ['l2', 'l1', 'elasticnet'],
-                                                     [0.000001, 0.00001, 0.0001, 0.001, 0.01],
-                                                     ['constant', 'optimal', 'invscaling'],
-                                                     [True, False]):
+for (loss, penalty, alpha, learning_rate) in itertools.product(['hinge', 'log', 'modified_huber', 'squared_hinge', 'perceptron'],
+                                                               ['l2', 'l1', 'elasticnet'],
+                                                               [0.000001, 0.00001, 0.0001, 0.001, 0.01],
+                                                               ['constant', 'optimal', 'invscaling']):
     for dataset_repeat in range(1, 31):
         # Divide the data set into a training and testing sets, each time with a different RNG seed
         training_indices, testing_indices = next(iter(StratifiedShuffleSplit(input_data['class'].values,
@@ -36,7 +34,7 @@ for (loss, penalty, alpha,
 
         # Create and fit the model on the training data
         try:
-            clf = SGDClassifier(loss=loss, penalty=penalty, alpha=alpha, learning_rate=learning_rate, warm_start=warm_start)
+            clf = SGDClassifier(loss=loss, penalty=penalty, alpha=alpha, learning_rate=learning_rate)
             clf.fit(training_features, training_classes)
             testing_score = clf.score(testing_features, testing_classes)
         except KeyboardInterrupt:
@@ -49,7 +47,6 @@ for (loss, penalty, alpha,
         param_string += 'penalty={},'.format(penalty)
         param_string += 'alpha={},'.format(alpha)
         param_string += 'learning_rate={},'.format(learning_rate)
-        param_string += 'warm_start={}'.format(warm_start)
     
         out_text = '\t'.join([dataset.split('/')[-1][:-7],
                               'SGDClassifier',
