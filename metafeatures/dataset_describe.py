@@ -207,7 +207,7 @@ class Dataset:
 
 
     def corr_with_dependent_abs_25p(self):
-        """ median absolute pearson correlation with dependent variable
+        """ 25p absolute pearson correlation with dependent variable
         returns np.nan for classificaiton problems. Uses df_encoded
         ie dataframe with categorical columns encoded automatically.
         """
@@ -220,7 +220,7 @@ class Dataset:
 
 
     def corr_with_dependent_abs_75p(self):
-        """ median absolute pearson correlation with dependent variable
+        """ 75p absolute pearson correlation with dependent variable
         returns np.nan for classificaiton problems. Uses df_encoded
         ie dataframe with categorical columns encoded automatically.
         """
@@ -229,6 +229,31 @@ class Dataset:
         else:
             abs_corr_with_dependent = self._get_corr_with_dependent().abs()
             return np.nanpercentile(abs_corr_with_dependent, 75)
+
+    #todo: try kurtosis and skew for correl values without abs.
+
+    def corr_with_dependent_abs_kurtosis(self):
+        """ kurtosis of absolute pearson correlation with dependent variable
+        returns np.nan for classificaiton problems. Uses df_encoded
+        ie dataframe with categorical columns encoded automatically.
+        """
+        from scipy.stats import kurtosis
+        if self.prediction_type == 'classification':
+            return np.nan
+        else:
+            abs_corr_with_dependent = self._get_corr_with_dependent().abs()
+            return kurtosis(abs_corr_with_dependent, bias = False)
+
+    def corr_with_dependent_abs_skew(self):
+        """ skew of absolute pearson correlation with dependent variable
+        returns np.nan for classificaiton problems. Uses df_encoded
+        ie dataframe with categorical columns encoded automatically.
+        """
+        if self.prediction_type == 'classification':
+            return np.nan
+        else:
+            abs_corr_with_dependent = self._get_corr_with_dependent().abs()
+            return skew(abs_corr_with_dependent, bias = False)
 
     #----------------------------------------------------------------------
     # Class probablity related
@@ -276,6 +301,10 @@ class Dataset:
         else:
             class_probablities = self._get_class_probablity()
             return class_probablities.median()
+
+    #todo: add kurtosis and skew here too. Classes will be usually less, so 
+    #may not make sense.
+
 
     #----------------------------------------------------------------------
     # Symbols related - All the categorical columns
@@ -350,6 +379,31 @@ class Dataset:
         symbol_counts = symbol_counts_dict.values()
 
         return np.sum(symbol_counts)  
+
+    def symbols_skew(self):
+        from scipy.stats import skew
+        symbol_counts_dict = self._get_symbols_per_category()
+        ## None is for checking empty, no categorical columns
+        if not symbol_counts_dict:
+            return np.nan
+
+        symbol_counts = symbol_counts_dict.values()
+
+        return skew(symbol_counts, bias = False)  
+
+    def symbols_kurtosis(self):
+        from scipy.stats import kurtosis
+        symbol_counts_dict = self._get_symbols_per_category()
+        ## None is for checking empty, no categorical columns
+        if not symbol_counts_dict:
+            return np.nan
+
+        symbol_counts = symbol_counts_dict.values()
+
+        return kurtosis(symbol_counts, bias = False)  
+
+    
+
 
     ##todo: Note we can evaluate symbol probabilities too.
 
