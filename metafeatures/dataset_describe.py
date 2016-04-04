@@ -37,7 +37,7 @@ class Dataset:
         self._set_categorical_columns(categorical_cols)
         self._set_prediction_type(prediction_type)
 
-        self.independent_col = list(set(self.df.columns.tolist()) - set(self.dependent_col))
+        self.independent_col = list(set(self.df.columns.tolist()) - set([self.dependent_col]))
         self._categorical_column_encoder()
 
         
@@ -71,8 +71,34 @@ class Dataset:
             num_cols = self.df._get_numeric_data().columns
             cat_cols = list(set(self.df.columns) - set(num_cols) - set([self.dependent_col]))
             self.categorical_cols = cat_cols
-            ## empty list in case of no categorical columns.
-
+            ## empty list in case of no categorical columns or categorical columns are
+            ## already label encoded, as in the case of Randal's data.
+            ## Assumption: In case of pre-processed data, all columns would be preprocessed
+            ## and not just some. Hence, proceed with heuristics only if previous code 
+            ## gave zero categorical_cols
+            # print cat_cols
+            if cat_cols == []:
+                possible_cat_cols = []
+                threshold_unique = 0.001*self.df.shape[0]
+                # print threshold_unique
+                for col in list(set(self.df.columns) - set([self.dependent_col])):
+                    unique_col = list(self.df[col].unique())
+                    unique_col.sort()
+                    # print col, len(unique_col)
+                    if len(unique_col) < threshold_unique:
+                        possible_cat_cols.append(col)
+                        continue
+                    # print unique_col == range(0, len(unique_col), 1)
+                    # print  isinstance(self.df[col][0], np.integer)
+                    # If unique values represent intergers from 0 to N, then there
+                    # is a high chance they were LabelEncoded using sklearn.
+                    # This heaveily relies on the way experiment datasets were encoded.
+                    # Not recommended for normal usage.
+                    
+                    if ((unique_col == range(0, len(unique_col), 1)) & (isinstance(self.df[col][0], np.integer))):   
+                        possible_cat_cols.append(col)
+                        continue
+                self.categorical_cols = list(set(possible_cat_cols))
         else:
             self.categorical_cols = categorical_cols
 
@@ -309,7 +335,7 @@ class Dataset:
     #----------------------------------------------------------------------
     # Symbols related - All the categorical columns
 
-    symbol_counts_dict = {}
+    symbol_counts_dict = None
     def _get_symbols_per_category(self):
         """
         Sets an dictionary with number of symbols per categorical 
@@ -317,7 +343,8 @@ class Dataset:
         """
 
 
-        if not self.symbol_counts_dict:
+        if self.symbol_counts_dict == None:
+            self.symbol_counts_dict = {}
             for column in self.categorical_cols:
                 self.symbol_counts_dict[column] = self.df[column].dropna().unique().shape[0]
             return self.symbol_counts_dict

@@ -19,22 +19,24 @@ def get_metafeatures(df):
         # print i
         if not i.startswith('__') and not i.startswith('_') and hasattr(result, '__call__'):
             meta_features[i] = result()
-
     return meta_features
 
 
 def main():
-    meta_features = []
+    meta_features_all = []
+    print '!'
     for i,dataset in enumerate(glob('../data/*')):
         # Read the data set into memory
         print 'Processing {0}'.format(dataset)
         input_data = pd.read_csv(dataset, compression='gzip', sep='\t')
-        meta_features.append(get_metafeatures(input_data))
+        meta_features = get_metafeatures(input_data)
+        meta_features['dataset'] = dataset
+        meta_features_all.append(meta_features)
         
         # For testing purposes.
-        # if i == 5:
-        #     pd.DataFrame(meta_features).to_csv('data_metafeatures.csv')
-        #     break
+        if i == 15:
+            pd.DataFrame(meta_features_all).to_csv('data_metafeatures.csv')
+            break
 
 if __name__ == '__main__':
     main()
