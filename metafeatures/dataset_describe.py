@@ -13,7 +13,7 @@ Contact: Harsh Nisar GH: harshnisar
 import pandas as pd
 import numpy as np
 from sklearn.preprocessing import OneHotEncoder, LabelEncoder
-
+from scipy.stats import kurtosis, skew
 class Dataset:
     """
     Initialize the dataset and give user the option to set some
@@ -433,4 +433,120 @@ class Dataset:
 
 
     ##todo: Note we can evaluate symbol probabilities too.
+
+    #----------------------------------------------------------------------
+    # Kustosis related - For all non-categorical columns
+    kurtosis_dict = None
+    def _get_kurtosis_per_num_column(self):
+        """Sets an dictionary with kurtosis per numerical column"""
+
+        if self.kurtosis_dict == None:
+            self.kurtosis_dict = {}
+            numerical_cols = list(set(self.independent_col) - set(self.categorical_cols)) 
+            for column in numerical_cols:
+                self.kurtosis_dict[column] = kurtosis(self.df[column].dropna(), bias = False)
+            return self.kurtosis_dict
+        else:
+            return self.kurtosis_dict
+
+    def kurtosis_mean(self):
+        """ Mean kurtosis per columns """
+
+        kurtosis_dict = self._get_kurtosis_per_num_column()
+        ## None is for checking empty, no categorical columns
+        
+        if not kurtosis_dict:
+            return np.nan
+        
+        kurtosisses = kurtosis_dict.values()
+
+        return np.nanmean(kurtosisses)
+
+    def kurtosis_median(self):
+        """ Median kurtosis per columns """
+
+        kurtosis_dict = self._get_kurtosis_per_num_column()
+        ## None is for checking empty, no categorical columns
+        
+        if not kurtosis_dict:
+            return np.nan
+        
+        kurtosisses = kurtosis_dict.values()
+
+        return np.nanmedian(kurtosisses)
+
+
+    def kurtosis_min(self):
+        """ Min kurtosis per columns """
+
+        kurtosis_dict = self._get_kurtosis_per_num_column()
+        ## None is for checking empty, no categorical columns
+        
+        if not kurtosis_dict:
+            return np.nan
+        
+        kurtosisses = kurtosis_dict.values()
+
+        return np.min(kurtosisses)
+
+
+    def kurtosis_max(self):
+        """ Max kurtosis per columns """
+
+        kurtosis_dict = self._get_kurtosis_per_num_column()
+        ## None is for checking empty, no categorical columns
+        
+        if not kurtosis_dict:
+            return np.nan
+        
+        kurtosisses = kurtosis_dict.values()
+
+        return np.max(kurtosisses)
+
+
+    def kurtosis_std(self):
+        """ STD of kurtosis per columns """
+
+        kurtosis_dict = self._get_kurtosis_per_num_column()
+        ## None is for checking empty, no categorical columns
+        
+        if not kurtosis_dict:
+            return np.nan
+        
+        kurtosisses = kurtosis_dict.values()
+
+        return np.nanstd(kurtosisses)
+
+
+    def kurtosis_kurtosis(self):
+        """ Kurtosis of kurtosis per columns """
+
+        kurtosis_dict = self._get_kurtosis_per_num_column()
+        ## None is for checking empty, no categorical columns
+        
+        if not kurtosis_dict:
+            return np.nan
+        
+        kurtosisses = kurtosis_dict.values()
+
+        return kurtosis(kurtosisses, bias = False)
+
+    
+    def kurtosis_skew(self):
+        """ skew of kurtosis per columns """
+
+        kurtosis_dict = self._get_kurtosis_per_num_column()
+        ## None is for checking empty, no categorical columns
+        
+        if not kurtosis_dict:
+            return np.nan
+        
+        kurtosisses = kurtosis_dict.values()
+
+        return skew(kurtosisses, bias = False)
+
+
+
+
+
 
