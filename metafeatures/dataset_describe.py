@@ -545,6 +545,119 @@ class Dataset:
 
         return skew(kurtosisses, bias = False)
 
+    #----------------------------------------------------------------------
+    # Skew related - For all non-categorical columns
+    skew_dict = None
+    def _get_skew_per_num_column(self):
+        """Sets an dictionary with skew measure per numerical column"""
+
+        if self.skew_dict == None:
+            self.skew_dict = {}
+            numerical_cols = list(set(self.independent_col) - set(self.categorical_cols)) 
+            for column in numerical_cols:
+                self.skew_dict[column] = skew(self.df[column].dropna(), bias = False)
+            return self.skew_dict
+        else:
+            return self.skew_dict
+
+    def skew_mean(self):
+        """ Mean skew in all numerical columns """
+
+        skew_dict = self._get_skew_per_num_column()
+        ## None is for checking empty, no categorical columns
+        
+        if not skew_dict:
+            return np.nan
+        
+        skews = skew_dict.values()
+
+        return np.nanmean(skews)
+
+
+
+    def skew_median(self):
+        """ Median skew in all numerical columns """
+
+        skew_dict = self._get_skew_per_num_column()
+        ## None is for checking empty, no categorical columns
+        
+        if not skew_dict:
+            return np.nan
+        
+        skews = skew_dict.values()
+
+        return np.nanmedian(skews)
+
+
+
+    def skew_min(self):
+        """ Min skew in all numerical columns """
+
+        skew_dict = self._get_skew_per_num_column()
+        ## None is for checking empty, no categorical columns
+        
+        if not skew_dict:
+            return np.nan
+        
+        skews = skew_dict.values()
+
+        return np.min(skews)
+
+
+    def skew_max(self):
+        """ Min skew in all numerical columns """
+
+        skew_dict = self._get_skew_per_num_column()
+        ## None is for checking empty, no categorical columns
+        
+        if not skew_dict:
+            return np.nan
+        
+        skews = skew_dict.values()
+
+        return np.max(skews)
+
+
+    def skew_std(self):
+        """ std skew in all numerical columns """
+
+        skew_dict = self._get_skew_per_num_column()
+        ## None is for checking empty, no categorical columns
+        
+        if not skew_dict:
+            return np.nan
+        
+        skews = skew_dict.values()
+
+        return np.nanstd(skews)
+
+
+    def skew_kurtosis(self):
+        """ kurtosis of skew in all numerical columns """
+
+        skew_dict = self._get_skew_per_num_column()
+        ## None is for checking empty, no categorical columns
+        
+        if not skew_dict:
+            return np.nan
+        
+        skews = skew_dict.values()
+
+        return kurtosis(skews, bias = False)
+
+    def skew_skew(self):
+        """ skew of skew in all numerical columns """
+
+        skew_dict = self._get_skew_per_num_column()
+        ## None is for checking empty, no categorical columns
+        
+        if not skew_dict:
+            return np.nan
+        
+        skews = skew_dict.values()
+
+        return skew(skews, bias = False)
+
 
 
 
