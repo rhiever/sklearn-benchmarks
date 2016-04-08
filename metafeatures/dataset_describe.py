@@ -13,7 +13,7 @@ Contact: Harsh Nisar GH: harshnisar
 import pandas as pd
 import numpy as np
 from sklearn.preprocessing import OneHotEncoder, LabelEncoder
-
+from scipy.stats import kurtosis, skew
 class Dataset:
     """
     Initialize the dataset and give user the option to set some
@@ -37,7 +37,7 @@ class Dataset:
         self._set_categorical_columns(categorical_cols)
         self._set_prediction_type(prediction_type)
 
-        self.independent_col = list(set(self.df.columns.tolist()) - set(self.dependent_col))
+        self.independent_col = list(set(self.df.columns.tolist()) - set([self.dependent_col]))
         self._categorical_column_encoder()
 
         
@@ -71,8 +71,34 @@ class Dataset:
             num_cols = self.df._get_numeric_data().columns
             cat_cols = list(set(self.df.columns) - set(num_cols) - set([self.dependent_col]))
             self.categorical_cols = cat_cols
-            ## empty list in case of no categorical columns.
-
+            ## empty list in case of no categorical columns or categorical columns are
+            ## already label encoded, as in the case of Randal's data.
+            ## Assumption: In case of pre-processed data, all columns would be preprocessed
+            ## and not just some. Hence, proceed with heuristics only if previous code 
+            ## gave zero categorical_cols
+            # print cat_cols
+            if cat_cols == []:
+                possible_cat_cols = []
+                threshold_unique = 0.001*self.df.shape[0]
+                # print threshold_unique
+                for col in list(set(self.df.columns) - set([self.dependent_col])):
+                    unique_col = list(self.df[col].unique())
+                    unique_col.sort()
+                    # print col, len(unique_col)
+                    if len(unique_col) < threshold_unique:
+                        possible_cat_cols.append(col)
+                        continue
+                    # print unique_col == range(0, len(unique_col), 1)
+                    # print  isinstance(self.df[col][0], np.integer)
+                    # If unique values represent intergers from 0 to N, then there
+                    # is a high chance they were LabelEncoded using sklearn.
+                    # This heaveily relies on the way experiment datasets were encoded.
+                    # Not recommended for normal usage.
+                    
+                    if ((unique_col == range(0, len(unique_col), 1)) & (isinstance(self.df[col][0], np.integer))):   
+                        possible_cat_cols.append(col)
+                        continue
+                self.categorical_cols = list(set(possible_cat_cols))
         else:
             self.categorical_cols = categorical_cols
 
@@ -309,7 +335,7 @@ class Dataset:
     #----------------------------------------------------------------------
     # Symbols related - All the categorical columns
 
-    symbol_counts_dict = {}
+    symbol_counts_dict = None
     def _get_symbols_per_category(self):
         """
         Sets an dictionary with number of symbols per categorical 
@@ -317,7 +343,8 @@ class Dataset:
         """
 
 
-        if not self.symbol_counts_dict:
+        if self.symbol_counts_dict == None:
+            self.symbol_counts_dict = {}
             for column in self.categorical_cols:
                 self.symbol_counts_dict[column] = self.df[column].dropna().unique().shape[0]
             return self.symbol_counts_dict
@@ -406,4 +433,233 @@ class Dataset:
 
 
     ##todo: Note we can evaluate symbol probabilities too.
+
+    #----------------------------------------------------------------------
+    # Kustosis related - For all non-categorical columns
+    kurtosis_dict = None
+    def _get_kurtosis_per_num_column(self):
+        """Sets an dictionary with kurtosis per numerical column"""
+
+        if self.kurtosis_dict == None:
+            self.kurtosis_dict = {}
+            numerical_cols = list(set(self.independent_col) - set(self.categorical_cols)) 
+            for column in numerical_cols:
+                self.kurtosis_dict[column] = kurtosis(self.df[column].dropna(), bias = False)
+            return self.kurtosis_dict
+        else:
+            return self.kurtosis_dict
+
+    def kurtosis_mean(self):
+        """ Mean kurtosis per columns """
+
+        kurtosis_dict = self._get_kurtosis_per_num_column()
+        ## None is for checking empty, no categorical columns
+        
+        if not kurtosis_dict:
+            return np.nan
+        
+        kurtosisses = kurtosis_dict.values()
+
+        return np.nanmean(kurtosisses)
+
+    def kurtosis_median(self):
+        """ Median kurtosis per columns """
+
+        kurtosis_dict = self._get_kurtosis_per_num_column()
+        ## None is for checking empty, no categorical columns
+        
+        if not kurtosis_dict:
+            return np.nan
+        
+        kurtosisses = kurtosis_dict.values()
+
+        return np.nanmedian(kurtosisses)
+
+
+    def kurtosis_min(self):
+        """ Min kurtosis per columns """
+
+        kurtosis_dict = self._get_kurtosis_per_num_column()
+        ## None is for checking empty, no categorical columns
+        
+        if not kurtosis_dict:
+            return np.nan
+        
+        kurtosisses = kurtosis_dict.values()
+
+        return np.min(kurtosisses)
+
+
+    def kurtosis_max(self):
+        """ Max kurtosis per columns """
+
+        kurtosis_dict = self._get_kurtosis_per_num_column()
+        ## None is for checking empty, no categorical columns
+        
+        if not kurtosis_dict:
+            return np.nan
+        
+        kurtosisses = kurtosis_dict.values()
+
+        return np.max(kurtosisses)
+
+
+    def kurtosis_std(self):
+        """ STD of kurtosis per columns """
+
+        kurtosis_dict = self._get_kurtosis_per_num_column()
+        ## None is for checking empty, no categorical columns
+        
+        if not kurtosis_dict:
+            return np.nan
+        
+        kurtosisses = kurtosis_dict.values()
+
+        return np.nanstd(kurtosisses)
+
+
+    def kurtosis_kurtosis(self):
+        """ Kurtosis of kurtosis per columns """
+
+        kurtosis_dict = self._get_kurtosis_per_num_column()
+        ## None is for checking empty, no categorical columns
+        
+        if not kurtosis_dict:
+            return np.nan
+        
+        kurtosisses = kurtosis_dict.values()
+
+        return kurtosis(kurtosisses, bias = False)
+
+    
+    def kurtosis_skew(self):
+        """ skew of kurtosis per columns """
+
+        kurtosis_dict = self._get_kurtosis_per_num_column()
+        ## None is for checking empty, no categorical columns
+        
+        if not kurtosis_dict:
+            return np.nan
+        
+        kurtosisses = kurtosis_dict.values()
+
+        return skew(kurtosisses, bias = False)
+
+    #----------------------------------------------------------------------
+    # Skew related - For all non-categorical columns
+    skew_dict = None
+    def _get_skew_per_num_column(self):
+        """Sets an dictionary with skew measure per numerical column"""
+
+        if self.skew_dict == None:
+            self.skew_dict = {}
+            numerical_cols = list(set(self.independent_col) - set(self.categorical_cols)) 
+            for column in numerical_cols:
+                self.skew_dict[column] = skew(self.df[column].dropna(), bias = False)
+            return self.skew_dict
+        else:
+            return self.skew_dict
+
+    def skew_mean(self):
+        """ Mean skew in all numerical columns """
+
+        skew_dict = self._get_skew_per_num_column()
+        ## None is for checking empty, no categorical columns
+        
+        if not skew_dict:
+            return np.nan
+        
+        skews = skew_dict.values()
+
+        return np.nanmean(skews)
+
+
+
+    def skew_median(self):
+        """ Median skew in all numerical columns """
+
+        skew_dict = self._get_skew_per_num_column()
+        ## None is for checking empty, no categorical columns
+        
+        if not skew_dict:
+            return np.nan
+        
+        skews = skew_dict.values()
+
+        return np.nanmedian(skews)
+
+
+
+    def skew_min(self):
+        """ Min skew in all numerical columns """
+
+        skew_dict = self._get_skew_per_num_column()
+        ## None is for checking empty, no categorical columns
+        
+        if not skew_dict:
+            return np.nan
+        
+        skews = skew_dict.values()
+
+        return np.min(skews)
+
+
+    def skew_max(self):
+        """ Min skew in all numerical columns """
+
+        skew_dict = self._get_skew_per_num_column()
+        ## None is for checking empty, no categorical columns
+        
+        if not skew_dict:
+            return np.nan
+        
+        skews = skew_dict.values()
+
+        return np.max(skews)
+
+
+    def skew_std(self):
+        """ std skew in all numerical columns """
+
+        skew_dict = self._get_skew_per_num_column()
+        ## None is for checking empty, no categorical columns
+        
+        if not skew_dict:
+            return np.nan
+        
+        skews = skew_dict.values()
+
+        return np.nanstd(skews)
+
+
+    def skew_kurtosis(self):
+        """ kurtosis of skew in all numerical columns """
+
+        skew_dict = self._get_skew_per_num_column()
+        ## None is for checking empty, no categorical columns
+        
+        if not skew_dict:
+            return np.nan
+        
+        skews = skew_dict.values()
+
+        return kurtosis(skews, bias = False)
+
+    def skew_skew(self):
+        """ skew of skew in all numerical columns """
+
+        skew_dict = self._get_skew_per_num_column()
+        ## None is for checking empty, no categorical columns
+        
+        if not skew_dict:
+            return np.nan
+        
+        skews = skew_dict.values()
+
+        return skew(skews, bias = False)
+
+
+
+
+
 
