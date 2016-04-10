@@ -702,3 +702,39 @@ class Dataset:
         else:
             return np.nan
 
+    #TODO: in effect, mean, max, min, std etc stats can be done on the variance explained ratios.
+    # I feel they will be useful.
+
+    #----------------------------------------------------------------------
+    # Entropy of the dependent variable - Classification
+
+    def entropy_dependent(self):
+        """ Only for Classification problems for now """
+
+        if self.prediction_type == 'classification':
+            class_probablities = self._get_class_probablity()
+            entropy_bench = -1 * class_probablities * np.log(class_probablities)
+            entropy = entropy_bench.sum()
+            self.entropy_ = entropy
+            return entropy
+
+        else:
+            return np.nan
+
+
+
+    def diversity_fraction(self):
+        """ Only for Classification problems for now """
+
+        if self.prediction_type == 'classification':
+            class_probablities = self._get_class_probablity()
+            entropy_bench = -1 * class_probablities * np.log(class_probablities)
+            entropy = entropy_bench.sum()
+            
+            diversity = np.e**entropy
+            diversity_fraction = diversity/class_probablities.shape[0]
+            return diversity_fraction
+        else:
+            return np.nan
+
+    #TODO: Can do plain diveristy too without any normalization.
