@@ -13,6 +13,8 @@ Contact: Harsh Nisar GH: harshnisar
 import pandas as pd
 import numpy as np
 from sklearn.preprocessing import OneHotEncoder, LabelEncoder
+from sklearn.decomposition import PCA
+
 from scipy.stats import kurtosis, skew
 class Dataset:
     """
@@ -547,6 +549,7 @@ class Dataset:
 
     #----------------------------------------------------------------------
     # Skew related - For all non-categorical columns
+
     skew_dict = None
     def _get_skew_per_num_column(self):
         """Sets an dictionary with skew measure per numerical column"""
@@ -660,6 +663,42 @@ class Dataset:
 
 
 
+    #----------------------------------------------------------------------
+    # PCA 
+
+    _pca_components = None
+    
+    def _get_pca_components(self):
+        """ Should work on dataframe with categorical variables encoded"""
+        if self._pca_components != False:
+            try:
+                clf = PCA(copy = True)
+
+                clf.fit(self.df_encoded[self.df_encoded.columns.drop(self.dependent_col)])
+                self._pca_components = clf
+                return self._pca_components
+            except Exception, e:
+                print e.message, '\t Could not process PCA'
+                self._pca_components = False
+        else:
+            return self._pca_components
 
 
+    def pca_fraction_95(self):
+        pca_compenents = self._get_pca_components()
+
+        if pca_compenents!=False:
+            sum_variance = 0
+            min_idx = 0
+            for idx, ratio in enumerate(pca_compenents.explained_variance_ratio_):
+                sum_variance = sum_variance + ratio
+                min_idx = min_idx + 1
+                if sum_variance >= 0.95:
+                    return float(min_idx)/len(pca_compenents.explained_variance_ratio_)
+                else:
+                    continue
+            return 1
+        
+        else:
+            return np.nan
 
