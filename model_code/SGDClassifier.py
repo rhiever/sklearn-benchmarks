@@ -21,7 +21,7 @@ for (loss, penalty, alpha, learning_rate, fit_intercept, l1_ratio, eta0, power_t
     if penalty != 'elasticnet' and l1_ratio != 0.15:
         continue
 
-    if learning rate not in ['constant', 'invscaling'] and eta0 != 0.0:
+    if learning_rate not in ['constant', 'invscaling'] and eta0 != 0.0:
         continue
 
     if learning_rate != 'invscaling' and power_t != 0.5:

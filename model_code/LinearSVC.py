@@ -36,7 +36,7 @@ for (C, loss, penalty, dual, tol, fit_intercept) in itertools.product([0.01, 0.1
 
         # Create and fit the model on the training data
         try:
-            clf = LinearSVC(C=C, loss=loss, penalty=penalty, dual=dual, tol=tol, fit_intercept)
+            clf = LinearSVC(C=C, loss=loss, penalty=penalty, dual=dual, tol=tol, fit_intercept=fit_intercept)
             clf.fit(training_features, training_classes)
             testing_score = clf.score(testing_features, testing_classes)
         except KeyboardInterrupt:

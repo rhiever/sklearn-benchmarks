@@ -33,7 +33,7 @@ for (C, loss, fit_intercept) in itertools.product([0.01, 0.1, 0.5, 1.0, 10.0, 50
 
         # Create and fit the model on the training data
         try:
-            clf = PassiveAggressiveClassifier(C=C, loss=loss, fit_intercept)
+            clf = PassiveAggressiveClassifier(C=C, loss=loss, fit_intercept=fit_intercept)
             clf.fit(training_features, training_classes)
             testing_score = clf.score(testing_features, testing_classes)
         except KeyboardInterrupt:
