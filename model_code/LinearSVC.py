@@ -22,10 +22,10 @@ for (C, loss, penalty, dual, tol) in itertools.product([0.01, 0.1, 0.5, 1.0, 10.
                                                                              train_size=0.75,
                                                                              test_size=0.25,
                                                                              random_state=dataset_repeat)))
-    
+
         training_features = input_data.loc[training_indices].drop('class', axis=1).values
         training_classes = input_data.loc[training_indices, 'class'].values
-    
+
         testing_features = input_data.loc[testing_indices].drop('class', axis=1).values
         testing_classes = input_data.loc[testing_indices, 'class'].values
 
@@ -42,17 +42,17 @@ for (C, loss, penalty, dual, tol) in itertools.product([0.01, 0.1, 0.5, 1.0, 10.
             sys.exit(1)
         except:
             continue
-    
+
         param_string = ''
         param_string += 'C={},'.format(C)
         param_string += 'loss={},'.format(loss)
         param_string += 'penalty={},'.format(penalty)
         param_string += 'dual={},'.format(dual)
         param_string += 'tol={}'.format(tol)
-    
+
         out_text = '\t'.join([dataset.split('/')[-1][:-7],
                               'LinearSVC',
                               param_string,
                               str(testing_score)])
-    
+
         print(out_text)
