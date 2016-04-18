@@ -14,8 +14,8 @@ for (C, penalty, fit_intercept, dual, tol) in itertools.product([0.01, 0.1, 0.5,
                                                                 ['l1', 'l2'],
                                                                 [True, False],
                                                                 [True, False],
-                                                                [0.01, 0.1, 0.5,1.0, 10.0, 50.0, 100.0]):
-    if penalty != 'l2' and dual == False:
+                                                                [1e-1, 1e-2, 1e-3, 1e-4, 1e-5]):
+    if penalty != 'l2' and dual != False:
         continue
 
     for dataset_repeat in range(1, 31):
@@ -45,17 +45,17 @@ for (C, penalty, fit_intercept, dual, tol) in itertools.product([0.01, 0.1, 0.5,
             sys.exit(1)
         except:
             continue
-    
+
         param_string = ''
         param_string += 'C={},'.format(C)
         param_string += 'penalty={},'.format(penalty)
         param_string += 'fit_intercept={},'.format(fit_intercept)
         param_string += 'dual={},'.format(dual)
         param_string += 'tol={}'.format(tol)
-    
+
         out_text = '\t'.join([dataset.split('/')[-1][:-7],
                               'LogisticRegression',
                               param_string,
                               str(testing_score)])
-    
+
         print(out_text)
