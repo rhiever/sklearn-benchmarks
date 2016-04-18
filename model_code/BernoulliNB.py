@@ -20,10 +20,10 @@ for (alpha, fit_prior, binarize) in itertools.product([0.0, 0.1, 0.25, 0.5, 0.75
                                                                              train_size=0.75,
                                                                              test_size=0.25,
                                                                              random_state=dataset_repeat)))
-    
+
         training_features = input_data.loc[training_indices].drop('class', axis=1).values
         training_classes = input_data.loc[training_indices, 'class'].values
-    
+
         testing_features = input_data.loc[testing_indices].drop('class', axis=1).values
         testing_classes = input_data.loc[testing_indices, 'class'].values
 
@@ -40,15 +40,15 @@ for (alpha, fit_prior, binarize) in itertools.product([0.0, 0.1, 0.25, 0.5, 0.75
             sys.exit(1)
         except:
             continue
-    
+
         param_string = ''
         param_string += 'alpha={},'.format(alpha)
         param_string += 'fit_prior={},'.format(fit_prior)
         param_string += 'binarize={}'.format(binarize)
-    
+
         out_text = '\t'.join([dataset.split('/')[-1][:-7],
                               'BernoulliNB',
                               param_string,
                               str(testing_score)])
-    
+
         print(out_text)
