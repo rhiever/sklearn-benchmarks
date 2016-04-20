@@ -1,9 +1,10 @@
 import sys
 import pandas as pd
-from sklearn.tree import DecisionTreeClassifier
-from sklearn.cross_validation import StratifiedShuffleSplit
-from sklearn.preprocessing import StandardScaler
 import itertools
+from sklearn.preprocessing import StandardScaler
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.cross_validation import cross_val_score
+from sklearn.pipeline import make_pipeline
 
 dataset = sys.argv[1]
 
@@ -13,42 +14,32 @@ input_data = pd.read_csv(dataset, compression='gzip', sep='\t')
 for (max_depth, max_features, criterion) in itertools.product([1, 2, 3, 4, 5, 10, 20, 50, None],
                                                               [0.1, 0.25, 0.5, 0.75, 'sqrt', 'log2', None],
                                                               ['gini', 'entropy']):
-    for dataset_repeat in range(1, 31):
-        # Divide the data set into a training and testing sets, each time with a different RNG seed
-        training_indices, testing_indices = next(iter(StratifiedShuffleSplit(input_data['class'].values,
-                                                                             n_iter=1,
-                                                                             train_size=0.75,
-                                                                             test_size=0.25,
-                                                                             random_state=dataset_repeat)))
-    
-        training_features = input_data.loc[training_indices].drop('class', axis=1).values
-        training_classes = input_data.loc[training_indices, 'class'].values
-    
-        testing_features = input_data.loc[testing_indices].drop('class', axis=1).values
-        testing_classes = input_data.loc[testing_indices, 'class'].values
+    features = input_data.drop('class', axis=1).values.astype(float)
+    labels = input_data['class'].values
 
-        ss = StandardScaler()
-        training_features = ss.fit_transform(training_features.astype(float))
-        testing_features = ss.transform(testing_features.astype(float))
+    try:
+        # Create the pipeline for the model
+        clf = make_pipeline(StandardScaler(),
+                            DecisionTreeClassifier(max_depth=max_depth,
+                                                   max_features=max_features,
+                                                   criterion=criterion))
+        # 10-fold CV scores for the pipeline
+        cv_scores = cross_val_score(estimator=clf, X=features, y=labels, cv=10)
+    except KeyboardInterrupt:
+        sys.exit(1)
+    except:
+        continue
 
-        # Create and fit the model on the training data
-        try:
-            clf = DecisionTreeClassifier(max_depth=max_depth, max_features=max_features, criterion=criterion)
-            clf.fit(training_features, training_classes)
-            testing_score = clf.score(testing_features, testing_classes)
-        except KeyboardInterrupt:
-            sys.exit(1)
-        except:
-            continue
-    
-        param_string = ''
-        param_string += 'max_depth={},'.format(max_depth)
-        param_string += 'max_features={},'.format(max_features)
-        param_string += 'criterion={}'.format(criterion)
-    
+    param_string = ''
+    param_string += 'max_depth={},'.format(max_depth)
+    param_string += 'max_features={},'.format(max_features)
+    param_string += 'criterion={}'.format(criterion)
+
+    for cv_score in cv_scores:
         out_text = '\t'.join([dataset.split('/')[-1][:-7],
                               'DecisionTreeClassifier',
                               param_string,
-                              str(testing_score)])
-    
+                              str(cv_score)])
+
         print(out_text)
+        sys.stdout.flush()

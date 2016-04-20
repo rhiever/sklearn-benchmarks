@@ -1,8 +1,10 @@
 import sys
 import pandas as pd
+import itertools
+from sklearn.preprocessing import StandardScaler, MinMaxScaler
 from sklearn.naive_bayes import MultinomialNB
-from sklearn.cross_validation import StratifiedShuffleSplit
-from sklearn.preprocessing import MinMaxScaler
+from sklearn.cross_validation import cross_val_score
+from sklearn.pipeline import make_pipeline
 import itertools
 
 dataset = sys.argv[1]
@@ -12,41 +14,31 @@ input_data = pd.read_csv(dataset, compression='gzip', sep='\t')
 
 for (alpha, fit_prior) in itertools.product([0.0, 0.1, 0.25, 0.5, 0.75, 1.0],
                                             [True, False]):
-    for dataset_repeat in range(1, 31):
-        # Divide the data set into a training and testing sets, each time with a different RNG seed
-        training_indices, testing_indices = next(iter(StratifiedShuffleSplit(input_data['class'].values,
-                                                                             n_iter=1,
-                                                                             train_size=0.75,
-                                                                             test_size=0.25,
-                                                                             random_state=dataset_repeat)))
-    
-        training_features = input_data.loc[training_indices].drop('class', axis=1).values
-        training_classes = input_data.loc[training_indices, 'class'].values
-    
-        testing_features = input_data.loc[testing_indices].drop('class', axis=1).values
-        testing_classes = input_data.loc[testing_indices, 'class'].values
+    features = input_data.drop('class', axis=1).values.astype(float)
+    labels = input_data['class'].values
 
-        mms = MinMaxScaler()
-        training_features = mms.fit_transform(training_features.astype(float))
-        testing_features = mms.transform(testing_features.astype(float))
+    try:
+        # Create the pipeline for the model
+        clf = make_pipeline(StandardScaler(),
+                            MinMaxScaler(),
+                            MultinomialNB(alpha=alpha,
+                                          fit_prior=fit_prior))
+        # 10-fold CV scores for the pipeline
+        cv_scores = cross_val_score(estimator=clf, X=features, y=labels, cv=10)
+    except KeyboardInterrupt:
+        sys.exit(1)
+    except:
+        continue
 
-        # Create and fit the model on the training data
-        try:
-            clf = MultinomialNB(alpha=alpha, fit_prior=fit_prior)
-            clf.fit(training_features, training_classes)
-            testing_score = clf.score(testing_features, testing_classes)
-        except KeyboardInterrupt:
-            sys.exit(1)
-        except:
-            continue
-    
-        param_string = ''
-        param_string += 'alpha={},'.format(alpha)
-        param_string += 'fit_prior={}'.format(fit_prior)
-    
+    param_string = ''
+    param_string += 'alpha={},'.format(alpha)
+    param_string += 'fit_prior={}'.format(fit_prior)
+
+    for cv_score in cv_scores:
         out_text = '\t'.join([dataset.split('/')[-1][:-7],
                               'MultinomialNB',
                               param_string,
-                              str(testing_score)])
-    
+                              str(cv_score)])
+
         print(out_text)
+        sys.stdout.flush()

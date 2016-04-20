@@ -1,8 +1,10 @@
 import sys
 import pandas as pd
-from sklearn.neighbors import KNeighborsClassifier
-from sklearn.cross_validation import StratifiedShuffleSplit
+import itertools
 from sklearn.preprocessing import StandardScaler
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.cross_validation import cross_val_score
+from sklearn.pipeline import make_pipeline
 import itertools
 
 dataset = sys.argv[1]
@@ -10,43 +12,32 @@ dataset = sys.argv[1]
 # Read the data set into memory
 input_data = pd.read_csv(dataset, compression='gzip', sep='\t')
 
-for (n_neighbors, weights) in itertools.product([1, 5, 10, 50, 100],
+for (n_neighbors, weights) in itertools.product(list(range(1, 26)) + [50, 100],
                                                 ['uniform', 'distance']):
-    for dataset_repeat in range(1, 31):
-        # Divide the data set into a training and testing sets, each time with a different RNG seed
-        training_indices, testing_indices = next(iter(StratifiedShuffleSplit(input_data['class'].values,
-                                                                             n_iter=1,
-                                                                             train_size=0.75,
-                                                                             test_size=0.25,
-                                                                             random_state=dataset_repeat)))
-    
-        training_features = input_data.loc[training_indices].drop('class', axis=1).values
-        training_classes = input_data.loc[training_indices, 'class'].values
-    
-        testing_features = input_data.loc[testing_indices].drop('class', axis=1).values
-        testing_classes = input_data.loc[testing_indices, 'class'].values
+    features = input_data.drop('class', axis=1).values.astype(float)
+    labels = input_data['class'].values
 
-        ss = StandardScaler()
-        training_features = ss.fit_transform(training_features.astype(float))
-        testing_features = ss.transform(testing_features.astype(float))
+    try:
+        # Create the pipeline for the model
+        clf = make_pipeline(StandardScaler(),
+                            KNeighborsClassifier(n_neighbors=n_neighbors,
+                                                 weights=weights))
+        # 10-fold CV scores for the pipeline
+        cv_scores = cross_val_score(estimator=clf, X=features, y=labels, cv=10)
+    except KeyboardInterrupt:
+        sys.exit(1)
+    except:
+        continue
 
-        # Create and fit the model on the training data
-        try:
-            clf = KNeighborsClassifier(n_neighbors=n_neighbors, weights=weights)
-            clf.fit(training_features, training_classes)
-            testing_score = clf.score(testing_features, testing_classes)
-        except KeyboardInterrupt:
-            sys.exit(1)
-        except:
-            continue
-    
-        param_string = ''
-        param_string += 'n_neighbors={},'.format(n_neighbors)
-        param_string += 'weights={}'.format(weights)
-    
+    param_string = ''
+    param_string += 'n_neighbors={},'.format(n_neighbors)
+    param_string += 'weights={}'.format(weights)
+
+    for cv_score in cv_scores:
         out_text = '\t'.join([dataset.split('/')[-1][:-7],
                               'KNeighborsClassifier',
                               param_string,
-                              str(testing_score)])
-    
+                              str(cv_score)])
+
         print(out_text)
+        sys.stdout.flush()
