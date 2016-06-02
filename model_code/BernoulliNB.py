@@ -1,7 +1,7 @@
 import sys
 import pandas as pd
 import itertools
-from sklearn.preprocessing import StandardScaler, MinMaxScaler
+from sklearn.preprocessing import MinMaxScaler
 from sklearn.naive_bayes import BernoulliNB
 from sklearn.cross_validation import cross_val_score
 from sklearn.pipeline import make_pipeline
@@ -19,8 +19,7 @@ for (alpha, fit_prior, binarize) in itertools.product([0.0, 0.1, 0.25, 0.5, 0.75
 
     try:
         # Create the pipeline for the model
-        clf = make_pipeline(StandardScaler(),
-                            MinMaxScaler(),
+        clf = make_pipeline(MinMaxScaler(),
                             BernoulliNB(alpha=alpha,
                                         fit_prior=fit_prior,
                                         binarize=binarize))
