@@ -13,7 +13,8 @@ dataset = sys.argv[1]
 # Read the data set into memory
 input_data = pd.read_csv(dataset, compression='gzip', sep='\t')
 
-for (C, loss, penalty, dual, tol, fit_intercept) in itertools.product(np.concatenate(np.arange(0., 1.0, 0.1), np.arange(1., 10.01, 1.)),
+for (C, loss, penalty, dual, tol, fit_intercept) in itertools.product(np.concatenate((np.arange(0., 1.0, 0.1),
+                                                                                      np.arange(1., 10.01, 1.))),
                                                                       ['hinge', 'squared_hinge'],
                                                                       ['l1', 'l2'],
                                                                       [True, False],
