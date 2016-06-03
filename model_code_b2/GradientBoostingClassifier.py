@@ -14,7 +14,7 @@ dataset = sys.argv[1]
 input_data = pd.read_csv(dataset, compression='gzip', sep='\t')
 
 for (loss, learning_rate, n_estimators,
-     max_depth, max_features) in itertools.product(['exponential'],
+     max_depth, max_features) in itertools.product(['deviance', 'exponential'],
                                                    np.arange(0.1, 1.01, 0.1),
                                                    [500],
                                                    [None],
