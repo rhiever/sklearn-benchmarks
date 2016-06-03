@@ -12,7 +12,7 @@ dataset = sys.argv[1]
 # Read the data set into memory
 input_data = pd.read_csv(dataset, compression='gzip', sep='\t')
 
-for (alpha, fit_prior) in itertools.product([[1., 5., 10., 25., 50.],
+for (alpha, fit_prior) in itertools.product([1., 5., 10., 25., 50.],
                                             [True]):
     features = input_data.drop('class', axis=1).values.astype(float)
     labels = input_data['class'].values
