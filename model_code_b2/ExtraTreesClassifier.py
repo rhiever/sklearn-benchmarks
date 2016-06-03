@@ -19,7 +19,7 @@ for (n_estimators, max_depth,
                                                     [None],
                                                     [0.1, 0.25, 0.5, 0.75, 'sqrt', 'log2', None],
                                                     ['gini'],
-                                                    np.arange(0., 1.01, 0.05)):
+                                                    np.arange(0., 0.51, 0.05)):
     features = input_data.drop('class', axis=1).values.astype(float)
     labels = input_data['class'].values
 

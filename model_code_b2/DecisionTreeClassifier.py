@@ -16,7 +16,7 @@ for (max_depth, max_features,
      criterion, min_weight_fraction_leaf) in itertools.product([None],
                                                                [None],
                                                                ['gini', 'entropy'],
-                                                               np.arange(0., 1.01, 0.05)):
+                                                               np.arange(0., 0.51, 0.05)):
     features = input_data.drop('class', axis=1).values.astype(float)
     labels = input_data['class'].values
 
