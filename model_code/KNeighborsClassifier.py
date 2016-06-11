@@ -1,5 +1,6 @@
 import sys
 import pandas as pd
+import numpy as np
 import itertools
 from sklearn.preprocessing import StandardScaler
 from sklearn.neighbors import KNeighborsClassifier
@@ -22,7 +23,8 @@ for (n_neighbors, weights) in itertools.product(list(range(1, 26)) + [50, 100],
         clf = make_pipeline(StandardScaler(),
                             KNeighborsClassifier(n_neighbors=n_neighbors,
                                                  weights=weights))
-        # 10-fold CV scores for the pipeline
+        # 10-fold CV scores for the pipeline with a fixed seed
+        np.random.seed(2097483)
         cv_scores = cross_val_score(estimator=clf, X=features, y=labels, cv=10)
     except KeyboardInterrupt:
         sys.exit(1)

@@ -1,5 +1,6 @@
 import sys
 import pandas as pd
+import numpy as np
 import itertools
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.naive_bayes import BernoulliNB
@@ -23,7 +24,8 @@ for (alpha, fit_prior, binarize) in itertools.product([0.0, 0.1, 0.25, 0.5, 0.75
                             BernoulliNB(alpha=alpha,
                                         fit_prior=fit_prior,
                                         binarize=binarize))
-        # 10-fold CV scores for the pipeline
+        # 10-fold CV scores for the pipeline with a fixed seed
+        np.random.seed(2097483)
         cv_scores = cross_val_score(estimator=clf, X=features, y=labels, cv=10)
     except KeyboardInterrupt:
         sys.exit(1)

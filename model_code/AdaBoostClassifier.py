@@ -1,5 +1,6 @@
 import sys
 import pandas as pd
+import numpy as np
 import itertools
 from sklearn.preprocessing import StandardScaler
 from sklearn.ensemble import AdaBoostClassifier
@@ -21,7 +22,8 @@ for (learning_rate, n_estimators) in itertools.product([0.01, 0.1, 0.5, 1.0, 10.
         clf = make_pipeline(StandardScaler(),
                             AdaBoostClassifier(learning_rate=learning_rate,
                                                n_estimators=n_estimators))
-        # 10-fold CV scores for the pipeline
+        # 10-fold CV scores for the pipeline with a fixed seed
+        np.random.seed(2097483)
         cv_scores = cross_val_score(estimator=clf, X=features, y=labels, cv=10)
     except KeyboardInterrupt:
         sys.exit(1)

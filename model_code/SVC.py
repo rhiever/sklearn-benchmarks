@@ -1,5 +1,6 @@
 import sys
 import pandas as pd
+import numpy as np
 import itertools
 from sklearn.preprocessing import StandardScaler
 from sklearn.svm import SVC
@@ -39,8 +40,8 @@ for (C, gamma, kernel, degree, coef0, tol) in itertools.product([0.01, 0.1, 0.5,
                                 degree=degree,
                                 coef0=coef0,
                                 tol=tol))
-    
-        # 10-fold CV scores for the pipeline
+        # 10-fold CV scores for the pipeline with a fixed seed
+        np.random.seed(2097483)
         cv_scores = cross_val_score(estimator=clf, X=features, y=labels, cv=10)
     except KeyboardInterrupt:
         sys.exit(1)

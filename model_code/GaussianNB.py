@@ -1,5 +1,6 @@
 import sys
 import pandas as pd
+import numpy as np
 import itertools
 from sklearn.preprocessing import StandardScaler
 from sklearn.naive_bayes import GaussianNB
@@ -19,8 +20,8 @@ try:
     # Create the pipeline for the model
     clf = make_pipeline(StandardScaler(),
                         GaussianNB())
-    # 10-fold CV scores for the pipeline
-    cv_scores = cross_val_score(estimator=clf, X=features, y=labels, cv=10)
+    # 10-fold CV scores for the pipeline with a fixed seed
+    np.random.seed(2097483)
 except KeyboardInterrupt:
     sys.exit(1)
 except:

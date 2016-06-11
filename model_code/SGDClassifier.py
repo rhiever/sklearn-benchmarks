@@ -1,5 +1,6 @@
 import sys
 import pandas as pd
+import numpy as np
 import itertools
 from sklearn.preprocessing import StandardScaler
 from sklearn.linear_model import SGDClassifier
@@ -43,8 +44,8 @@ for (loss, penalty, alpha, learning_rate, fit_intercept, l1_ratio, eta0, power_t
                                           l1_ratio=l1_ratio,
                                           eta0=eta0,
                                           power_t=power_t))
-    
-        # 10-fold CV scores for the pipeline
+        # 10-fold CV scores for the pipeline with a fixed seed
+        np.random.seed(2097483)
         cv_scores = cross_val_score(estimator=clf, X=features, y=labels, cv=10)
     except KeyboardInterrupt:
         sys.exit(1)
