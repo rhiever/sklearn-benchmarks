@@ -13,11 +13,10 @@ dataset = sys.argv[1]
 # Read the data set into memory
 input_data = pd.read_csv(dataset, compression='gzip', sep='\t')
 
-for (C, penalty, fit_intercept, dual, tol) in itertools.product([0.01, 0.1, 0.5,1.0, 10.0, 50.0, 100.0],
-                                                                ['l1', 'l2'],
-                                                                [True, False],
-                                                                [True, False],
-                                                                [1e-1, 1e-2, 1e-3, 1e-4, 1e-5]):
+for (C, penalty, fit_intercept, dual) in itertools.product(np.arange(0.5, 20.1, 0.5),
+                                                           ['l1', 'l2'],
+                                                           [True, False],
+                                                           [True, False]):
     if penalty != 'l2' and dual != False:
         continue
 
@@ -31,7 +30,6 @@ for (C, penalty, fit_intercept, dual, tol) in itertools.product([0.01, 0.1, 0.5,
                                                penalty=penalty,
                                                fit_intercept=fit_intercept,
                                                dual=dual,
-                                               tol=tol,
                                                random_state=324089))
         # 10-fold CV scores for the pipeline
         cv_scores = cross_val_score(estimator=clf, X=features, y=labels, cv=10)
@@ -45,7 +43,6 @@ for (C, penalty, fit_intercept, dual, tol) in itertools.product([0.01, 0.1, 0.5,
     param_string += 'penalty={},'.format(penalty)
     param_string += 'fit_intercept={},'.format(fit_intercept)
     param_string += 'dual={},'.format(dual)
-    param_string += 'tol={}'.format(tol)
 
     for cv_score in cv_scores:
         out_text = '\t'.join([dataset.split('/')[-1][:-7],

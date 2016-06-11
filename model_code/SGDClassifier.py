@@ -14,13 +14,13 @@ dataset = sys.argv[1]
 input_data = pd.read_csv(dataset, compression='gzip', sep='\t')
 
 for (loss, penalty, alpha, learning_rate, fit_intercept, l1_ratio, eta0, power_t) in itertools.product(['hinge', 'log', 'modified_huber', 'squared_hinge', 'perceptron'],
-                                                                                                                ['l2', 'l1', 'elasticnet'],
-                                                                                                                [0.000001, 0.00001, 0.0001, 0.001, 0.01],
-                                                                                                                ['constant', 'optimal', 'invscaling'],
-                                                                                                                [True, False],
-                                                                                                                [0.0, 0.1, 0.15, 0.25, 0.5, 0.75, 0.9, 1.0],
-                                                                                                                [0.01, 0.1, 0.5, 1.0, 10.0, 50.0, 100.0],
-                                                                                                                [0.0, 0.1, 0.5, 1.0, 10.0, 50.0, 100.0]):
+                                                                                                       ['l2', 'l1', 'elasticnet'],
+                                                                                                       [0.000001, 0.00001, 0.0001, 0.001, 0.01],
+                                                                                                       ['constant', 'optimal', 'invscaling'],
+                                                                                                       [True, False],
+                                                                                                       [0., 0.1, 0.15, 0.25, 0.5, 0.75, 0.9, 1.],
+                                                                                                       [0.01, 0.1, 0.5, 1., 10., 50., 100.],
+                                                                                                       [0., 0.1, 0.5, 1., 10., 50., 100.]):
     if penalty != 'elasticnet' and l1_ratio != 0.15:
         continue
 

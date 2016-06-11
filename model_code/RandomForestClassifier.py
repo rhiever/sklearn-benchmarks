@@ -13,10 +13,10 @@ dataset = sys.argv[1]
 # Read the data set into memory
 input_data = pd.read_csv(dataset, compression='gzip', sep='\t')
 
-for (n_estimators, max_depth, max_features, criterion) in itertools.product([10, 50, 100, 500, 1000],
-                                                                            [1, 2, 3, 4, 5, 10, 20, 50, None],
-                                                                            [0.1, 0.25, 0.5, 0.75, 'sqrt', 'log2', None],
-                                                                            ['gini', 'entropy']):
+for (n_estimators, min_weight_fraction_leaf, max_features, criterion) in itertools.product([10, 50, 100, 500, 1000],
+                                                                                           np.arange(0., 0.51, 0.05),
+                                                                                           [0.1, 0.25, 0.5, 0.75, 'sqrt', 'log2', None],
+                                                                                           ['gini', 'entropy']):
     features = input_data.drop('class', axis=1).values.astype(float)
     labels = input_data['class'].values
 
@@ -24,7 +24,7 @@ for (n_estimators, max_depth, max_features, criterion) in itertools.product([10,
         # Create the pipeline for the model
         clf = make_pipeline(StandardScaler(),
                             RandomForestClassifier(n_estimators=n_estimators,
-                                                   max_depth=max_depth,
+                                                   min_weight_fraction_leaf=min_weight_fraction_leaf,
                                                    max_features=max_features,
                                                    criterion=criterion,
                                                    random_state=324089))
@@ -37,7 +37,7 @@ for (n_estimators, max_depth, max_features, criterion) in itertools.product([10,
 
     param_string = ''
     param_string += 'n_estimators={},'.format(n_estimators)
-    param_string += 'max_depth={},'.format(max_depth)
+    param_string += 'min_weight_fraction_leaf={},'.format(min_weight_fraction_leaf)
     param_string += 'max_features={},'.format(max_features)
     param_string += 'criterion={}'.format(criterion)
 

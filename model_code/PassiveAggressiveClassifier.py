@@ -13,7 +13,7 @@ dataset = sys.argv[1]
 # Read the data set into memory
 input_data = pd.read_csv(dataset, compression='gzip', sep='\t')
 
-for (C, loss, fit_intercept) in itertools.product([0.01, 0.1, 0.5, 1.0, 10.0, 50.0, 100.0],
+for (C, loss, fit_intercept) in itertools.product([0.000001, 0.00001, 0.0001, 0.001, 0.01, 0.1, 0.5, 1., 10., 50., 100.],
                                                   ['hinge', 'squared_hinge'],
                                                   [True, False]):
     features = input_data.drop('class', axis=1).values.astype(float)

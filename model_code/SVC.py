@@ -13,12 +13,11 @@ dataset = sys.argv[1]
 # Read the data set into memory
 input_data = pd.read_csv(dataset, compression='gzip', sep='\t')
 
-for (C, gamma, kernel, degree, coef0, tol) in itertools.product([0.01, 0.1, 0.5, 1.0, 10.0, 50.0, 100.0],
-                                                                [0.01, 0.1, 0.5, 1.0, 10.0, 50.0, 100.0, 'auto'],
-                                                                ['linear', 'poly', 'rbf', 'sigmoid', 'precomputed'],
-                                                                [2, 3],
-                                                                [0.0, 0.1, 0.5, 1.0, 10.0, 50.0, 100.0],
-                                                                [1e-1, 1e-2, 1e-3, 1e-4, 1e-5]):
+for (C, gamma, kernel, degree, coef0) in itertools.product([0.01, 0.1, 0.5, 1., 10., 50., 100.],
+                                                           [0.01, 0.1, 0.5, 1., 10., 50., 100., 'auto'],
+                                                           ['linear', 'poly', 'rbf', 'sigmoid', 'precomputed'],
+                                                           [2, 3],
+                                                           [0., 0.1, 0.5, 1., 10., 50., 100.]):
     if kernel != 'poly' and degree > 2:
         continue
 
@@ -39,7 +38,6 @@ for (C, gamma, kernel, degree, coef0, tol) in itertools.product([0.01, 0.1, 0.5,
                                 kernel=kernel,
                                 degree=degree,
                                 coef0=coef0,
-                                tol=tol,
                                 random_state=324089))
         # 10-fold CV scores for the pipeline
         cv_scores = cross_val_score(estimator=clf, X=features, y=labels, cv=10)
@@ -54,7 +52,6 @@ for (C, gamma, kernel, degree, coef0, tol) in itertools.product([0.01, 0.1, 0.5,
     param_string += 'kernel={},'.format(kernel)
     param_string += 'degree={},'.format(degree)
     param_string += 'coef0={},'.format(coef0)
-    param_string += 'tol={}'.format(tol)
 
     for cv_score in cv_scores:
         out_text = '\t'.join([dataset.split('/')[-1][:-7],

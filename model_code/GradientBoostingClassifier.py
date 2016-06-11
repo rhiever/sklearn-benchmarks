@@ -18,7 +18,7 @@ for (loss, learning_rate, n_estimators,
                                                    [0.01, 0.1, 0.5, 1.0, 10.0, 50.0, 100.0],
                                                    [10, 50, 100, 500, 1000],
                                                    [1, 2, 3, 4, 5, 10, 20, 50, None],
-                                                   [0.1, 0.25, 0.5, 0.75, 'sqrt', 'log2', None]):
+                                                   [0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 'sqrt', 'log2']):
     features = input_data.drop('class', axis=1).values.astype(float)
     labels = input_data['class'].values
 
