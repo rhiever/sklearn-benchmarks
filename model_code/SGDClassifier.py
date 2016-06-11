@@ -43,9 +43,9 @@ for (loss, penalty, alpha, learning_rate, fit_intercept, l1_ratio, eta0, power_t
                                           fit_intercept=fit_intercept,
                                           l1_ratio=l1_ratio,
                                           eta0=eta0,
-                                          power_t=power_t))
-        # 10-fold CV scores for the pipeline with a fixed seed
-        np.random.seed(2097483)
+                                          power_t=power_t,
+                                          random_state=324089))
+        # 10-fold CV scores for the pipeline
         cv_scores = cross_val_score(estimator=clf, X=features, y=labels, cv=10)
     except KeyboardInterrupt:
         sys.exit(1)

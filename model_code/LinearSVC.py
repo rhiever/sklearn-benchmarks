@@ -30,9 +30,9 @@ for (C, loss, penalty, dual, tol, fit_intercept) in itertools.product([0.01, 0.1
                                       penalty=penalty,
                                       dual=dual,
                                       tol=tol,
-                                      fit_intercept=fit_intercept))
-        # 10-fold CV scores for the pipeline with a fixed seed
-        np.random.seed(2097483)
+                                      fit_intercept=fit_intercept,
+                                      random_state=324089))
+        # 10-fold CV scores for the pipeline
         cv_scores = cross_val_score(estimator=clf, X=features, y=labels, cv=10)
     except KeyboardInterrupt:
         sys.exit(1)

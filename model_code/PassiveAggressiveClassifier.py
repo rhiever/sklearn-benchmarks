@@ -24,9 +24,9 @@ for (C, loss, fit_intercept) in itertools.product([0.01, 0.1, 0.5, 1.0, 10.0, 50
         clf = make_pipeline(StandardScaler(),
                             PassiveAggressiveClassifier(C=C,
                                                         loss=loss,
-                                                        fit_intercept=fit_intercept))
-        # 10-fold CV scores for the pipeline with a fixed seed
-        np.random.seed(2097483)
+                                                        fit_intercept=fit_intercept,
+                                                        random_state=324089))
+        # 10-fold CV scores for the pipeline
         cv_scores = cross_val_score(estimator=clf, X=features, y=labels, cv=10)
     except KeyboardInterrupt:
         sys.exit(1)

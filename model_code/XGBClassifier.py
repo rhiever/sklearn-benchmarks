@@ -24,9 +24,9 @@ for (learning_rate, n_estimators, max_depth) in itertools.product([0.01, 0.1, 0.
         clf = make_pipeline(StandardScaler(),
                             XGBClassifier(learning_rate=learning_rate,
                                           n_estimators=n_estimators,
-                                          max_depth=max_depth))
-        # 10-fold CV scores for the pipeline with a fixed seed
-        np.random.seed(2097483)
+                                          max_depth=max_depth,
+                                          random_state=324089))
+        # 10-fold CV scores for the pipeline
         cv_scores = cross_val_score(estimator=clf, X=features, y=labels, cv=10)
     except KeyboardInterrupt:
         sys.exit(1)

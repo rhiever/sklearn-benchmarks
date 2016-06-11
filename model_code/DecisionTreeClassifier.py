@@ -23,9 +23,9 @@ for (max_depth, max_features, criterion) in itertools.product([1, 2, 3, 4, 5, 10
         clf = make_pipeline(StandardScaler(),
                             DecisionTreeClassifier(max_depth=max_depth,
                                                    max_features=max_features,
-                                                   criterion=criterion))
-        # 10-fold CV scores for the pipeline with a fixed seed
-        np.random.seed(2097483)
+                                                   criterion=criterion,
+                                                   random_state=324089))
+        # 10-fold CV scores for the pipeline
         cv_scores = cross_val_score(estimator=clf, X=features, y=labels, cv=10)
     except KeyboardInterrupt:
         sys.exit(1)
