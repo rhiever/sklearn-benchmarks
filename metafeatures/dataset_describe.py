@@ -97,7 +97,7 @@ class Dataset:
                     # This heaveily relies on the way experiment datasets were encoded.
                     # Not recommended for normal usage.
                     
-                    if ((unique_col == range(0, len(unique_col), 1)) & (isinstance(self.df[col][0], np.integer))):   
+                    if ((unique_col == range(0, len(unique_col), 1)) & (isinstance(self.df.iloc[0][col], np.integer))):   
                         possible_cat_cols.append(col)
                         continue
                 self.categorical_cols = list(set(possible_cat_cols))
@@ -361,7 +361,7 @@ class Dataset:
         
         if not symbol_counts_dict:
             return np.nan
-        symbol_counts = symbol_counts_dict.values()
+        symbol_counts = list(symbol_counts_dict.values())
 
         return np.nanmean(symbol_counts)
 
@@ -372,7 +372,7 @@ class Dataset:
         ## None is for checking empty, no categorical columns
         if not symbol_counts_dict:
             return np.nan
-        symbol_counts = symbol_counts_dict.values()
+        symbol_counts = list(symbol_counts_dict.values())
 
         return np.nanstd(symbol_counts, ddof = 1)
 
@@ -383,7 +383,7 @@ class Dataset:
         ## None is for checking empty, no categorical columns
         if not symbol_counts_dict:
             return np.nan
-        symbol_counts = symbol_counts_dict.values()
+        symbol_counts = list(symbol_counts_dict.values())
 
         return np.min(symbol_counts)   
 
@@ -394,7 +394,7 @@ class Dataset:
 
         if not symbol_counts_dict:
             return np.nan
-        symbol_counts = symbol_counts_dict.values()
+        symbol_counts = list(symbol_counts_dict.values())
 
         return np.max(symbol_counts)
 
@@ -405,7 +405,7 @@ class Dataset:
         if not symbol_counts_dict:
             return np.nan
 
-        symbol_counts = symbol_counts_dict.values()
+        symbol_counts = list(symbol_counts_dict.values())
 
         return np.sum(symbol_counts)  
 
@@ -416,7 +416,7 @@ class Dataset:
         if not symbol_counts_dict:
             return np.nan
 
-        symbol_counts = symbol_counts_dict.values()
+        symbol_counts = list(symbol_counts_dict.values())
 
         return skew(symbol_counts, bias = False)  
 
@@ -427,7 +427,7 @@ class Dataset:
         if not symbol_counts_dict:
             return np.nan
 
-        symbol_counts = symbol_counts_dict.values()
+        symbol_counts = list(symbol_counts_dict.values())
 
         return kurtosis(symbol_counts, bias = False)  
 
@@ -460,7 +460,7 @@ class Dataset:
         if not kurtosis_dict:
             return np.nan
         
-        kurtosisses = kurtosis_dict.values()
+        kurtosisses = list(kurtosis_dict.values())
 
         return np.nanmean(kurtosisses)
 
@@ -473,7 +473,7 @@ class Dataset:
         if not kurtosis_dict:
             return np.nan
         
-        kurtosisses = kurtosis_dict.values()
+        kurtosisses = list(kurtosis_dict.values())
 
         return np.nanmedian(kurtosisses)
 
@@ -487,7 +487,7 @@ class Dataset:
         if not kurtosis_dict:
             return np.nan
         
-        kurtosisses = kurtosis_dict.values()
+        kurtosisses = list(kurtosis_dict.values())
 
         return np.min(kurtosisses)
 
@@ -501,7 +501,7 @@ class Dataset:
         if not kurtosis_dict:
             return np.nan
         
-        kurtosisses = kurtosis_dict.values()
+        kurtosisses = list(kurtosis_dict.values())
 
         return np.max(kurtosisses)
 
@@ -515,7 +515,7 @@ class Dataset:
         if not kurtosis_dict:
             return np.nan
         
-        kurtosisses = kurtosis_dict.values()
+        kurtosisses = list(kurtosis_dict.values())
 
         return np.nanstd(kurtosisses)
 
@@ -529,7 +529,7 @@ class Dataset:
         if not kurtosis_dict:
             return np.nan
         
-        kurtosisses = kurtosis_dict.values()
+        kurtosisses = list(kurtosis_dict.values())
 
         return kurtosis(kurtosisses, bias = False)
 
@@ -543,7 +543,7 @@ class Dataset:
         if not kurtosis_dict:
             return np.nan
         
-        kurtosisses = kurtosis_dict.values()
+        kurtosisses = list(kurtosis_dict.values())
 
         return skew(kurtosisses, bias = False)
 
@@ -572,7 +572,7 @@ class Dataset:
         if not skew_dict:
             return np.nan
         
-        skews = skew_dict.values()
+        skews = list(skew_dict.values())
 
         return np.nanmean(skews)
 
@@ -587,7 +587,7 @@ class Dataset:
         if not skew_dict:
             return np.nan
         
-        skews = skew_dict.values()
+        skews = list(skew_dict.values())
 
         return np.nanmedian(skews)
 
@@ -602,7 +602,7 @@ class Dataset:
         if not skew_dict:
             return np.nan
         
-        skews = skew_dict.values()
+        skews = list(skew_dict.values())
 
         return np.min(skews)
 
@@ -616,7 +616,7 @@ class Dataset:
         if not skew_dict:
             return np.nan
         
-        skews = skew_dict.values()
+        skews = list(skew_dict.values())
 
         return np.max(skews)
 
@@ -630,7 +630,7 @@ class Dataset:
         if not skew_dict:
             return np.nan
         
-        skews = skew_dict.values()
+        skews = list(skew_dict.values())
 
         return np.nanstd(skews)
 
@@ -644,7 +644,7 @@ class Dataset:
         if not skew_dict:
             return np.nan
         
-        skews = skew_dict.values()
+        skews = list(skew_dict.values())
 
         return kurtosis(skews, bias = False)
 
@@ -657,7 +657,7 @@ class Dataset:
         if not skew_dict:
             return np.nan
         
-        skews = skew_dict.values()
+        skews = list(skew_dict.values())
 
         return skew(skews, bias = False)
 
@@ -677,9 +677,10 @@ class Dataset:
                 clf.fit(self.df_encoded[self.df_encoded.columns.drop(self.dependent_col)])
                 self._pca_components = clf
                 return self._pca_components
-            except Exception, e:
-                print e.message, '\t Could not process PCA'
+            except (Exception, e):
+                print(e.message, '\t Could not process PCA')
                 self._pca_components = False
+                return self._pca_components
         else:
             return self._pca_components
 
