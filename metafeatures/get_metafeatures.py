@@ -16,7 +16,6 @@ def get_metafeatures(df):
     meta_features = OrderedDict()
     for i in dir(dataset):
         result = getattr(dataset, i)
-        # print i
         if not i.startswith('__') and not i.startswith('_') and hasattr(result, '__call__'):
             meta_features[i] = result()
     return meta_features
@@ -24,12 +23,11 @@ def get_metafeatures(df):
 
 def main():
     meta_features_all = []
-    print '!'
     for i,dataset in enumerate(glob('../data/*')):
         # Read the data set into memory
-        print 'Processing {0}'.format(dataset)
+        print('Processing {0}'.format(dataset))
         if "cifar" in dataset:
-	    print "skipping:", dataset
+	    print("skipping:", dataset)
 	    continue
 	input_data = pd.read_csv(dataset, compression='gzip', sep='\t')
         meta_features = get_metafeatures(input_data)
