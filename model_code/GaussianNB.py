@@ -34,13 +34,12 @@ except:
 
 param_string = ''
 
-for cv_score in cv_scores:
-    out_text = '\t'.join([dataset.split('/')[-1][:-7],
-                          'GaussianNB',
-                          param_string,
-                          str(accuracy),
-                          str(macro_f1),
-                          str(balanced_accuracy)])
+out_text = '\t'.join([dataset.split('/')[-1][:-7],
+                      'GaussianNB',
+                      param_string,
+                      str(accuracy),
+                      str(macro_f1),
+                      str(balanced_accuracy)])
 
-    print(out_text)
-    sys.stdout.flush()
+print(out_text)
+sys.stdout.flush()
