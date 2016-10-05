@@ -26,7 +26,7 @@ for (alpha, fit_prior, binarize) in itertools.product([0., 0.1, 0.25, 0.5, 0.75,
                             BernoulliNB(alpha=alpha,
                                         fit_prior=fit_prior,
                                         binarize=binarize))
-        # 10-fold CV scores for the pipeline
+        # 10-fold CV score for the pipeline
         cv_predictions = cross_val_predict(estimator=clf, X=features, y=labels, cv=10)
         accuracy = accuracy_score(labels, cv_predictions)
         macro_f1 = f1_score(labels, cv_predictions, average='macro')

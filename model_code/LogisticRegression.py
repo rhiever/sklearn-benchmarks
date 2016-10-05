@@ -4,7 +4,9 @@ import numpy as np
 import itertools
 from sklearn.preprocessing import StandardScaler
 from sklearn.linear_model import LogisticRegression
-from sklearn.cross_validation import cross_val_score
+from sklearn.model_selection import cross_val_predict
+from sklearn.metrics import accuracy_score, f1_score
+from tpot_metrics import balanced_accuracy_score
 from sklearn.pipeline import make_pipeline
 import itertools
 
@@ -31,8 +33,11 @@ for (C, penalty, fit_intercept, dual) in itertools.product(np.arange(0.5, 20.1, 
                                                fit_intercept=fit_intercept,
                                                dual=dual,
                                                random_state=324089))
-        # 10-fold CV scores for the pipeline
-        cv_scores = cross_val_score(estimator=clf, X=features, y=labels, cv=10)
+        # 10-fold CV score for the pipeline
+        cv_predictions = cross_val_predict(estimator=clf, X=features, y=labels, cv=10)
+        accuracy = accuracy_score(labels, cv_predictions)
+        macro_f1 = f1_score(labels, cv_predictions, average='macro')
+        balanced_accuracy = balanced_accuracy_score(labels, cv_predictions)
     except KeyboardInterrupt:
         sys.exit(1)
     except:
@@ -44,11 +49,12 @@ for (C, penalty, fit_intercept, dual) in itertools.product(np.arange(0.5, 20.1, 
     param_string += 'fit_intercept={},'.format(fit_intercept)
     param_string += 'dual={},'.format(dual)
 
-    for cv_score in cv_scores:
-        out_text = '\t'.join([dataset.split('/')[-1][:-7],
-                              'LogisticRegression',
-                              param_string,
-                              str(cv_score)])
+    out_text = '\t'.join([dataset.split('/')[-1][:-7],
+                          'LogisticRegression',
+                          param_string,
+                          str(accuracy),
+                          str(macro_f1),
+                          str(balanced_accuracy)])
 
-        print(out_text)
-        sys.stdout.flush()
+    print(out_text)
+    sys.stdout.flush()

@@ -4,7 +4,9 @@ import numpy as np
 import itertools
 from sklearn.preprocessing import StandardScaler
 from sklearn.neighbors import KNeighborsClassifier
-from sklearn.cross_validation import cross_val_score
+from sklearn.model_selection import cross_val_predict
+from sklearn.metrics import accuracy_score, f1_score
+from tpot_metrics import balanced_accuracy_score
 from sklearn.pipeline import make_pipeline
 import itertools
 
@@ -23,8 +25,11 @@ for (n_neighbors, weights) in itertools.product(list(range(1, 26)) + [50, 100],
         clf = make_pipeline(StandardScaler(),
                             KNeighborsClassifier(n_neighbors=n_neighbors,
                                                  weights=weights))
-        # 10-fold CV scores for the pipeline
-        cv_scores = cross_val_score(estimator=clf, X=features, y=labels, cv=10)
+        # 10-fold CV score for the pipeline
+        cv_predictions = cross_val_predict(estimator=clf, X=features, y=labels, cv=10)
+        accuracy = accuracy_score(labels, cv_predictions)
+        macro_f1 = f1_score(labels, cv_predictions, average='macro')
+        balanced_accuracy = balanced_accuracy_score(labels, cv_predictions)
     except KeyboardInterrupt:
         sys.exit(1)
     except:
@@ -34,11 +39,12 @@ for (n_neighbors, weights) in itertools.product(list(range(1, 26)) + [50, 100],
     param_string += 'n_neighbors={},'.format(n_neighbors)
     param_string += 'weights={}'.format(weights)
 
-    for cv_score in cv_scores:
-        out_text = '\t'.join([dataset.split('/')[-1][:-7],
-                              'KNeighborsClassifier',
-                              param_string,
-                              str(cv_score)])
+    out_text = '\t'.join([dataset.split('/')[-1][:-7],
+                          'KNeighborsClassifier',
+                          param_string,
+                          str(accuracy),
+                          str(macro_f1),
+                          str(balanced_accuracy)])
 
-        print(out_text)
-        sys.stdout.flush()
+    print(out_text)
+    sys.stdout.flush()
