@@ -11,7 +11,7 @@ import itertools
 dataset = sys.argv[1]
 
 # Read the data set into memory
-input_data = pd.read_csv(dataset, compression='gzip', sep='\t')
+input_data = pd.read_csv(dataset, compression='gzip', sep='\t').sample(frac=1., replace=False, random_state=42)
 
 for (n_estimators, min_weight_fraction_leaf, max_features, criterion) in itertools.product([10, 50, 100, 500, 1000],
                                                                                            np.arange(0., 0.51, 0.05),

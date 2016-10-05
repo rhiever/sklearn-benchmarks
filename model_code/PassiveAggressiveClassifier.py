@@ -11,7 +11,7 @@ import itertools
 dataset = sys.argv[1]
 
 # Read the data set into memory
-input_data = pd.read_csv(dataset, compression='gzip', sep='\t')
+input_data = pd.read_csv(dataset, compression='gzip', sep='\t').sample(frac=1., replace=False, random_state=42)
 
 for (C, loss, fit_intercept) in itertools.product([0.000001, 0.00001, 0.0001, 0.001, 0.01, 0.1, 0.5, 1., 10., 50., 100.],
                                                   ['hinge', 'squared_hinge'],

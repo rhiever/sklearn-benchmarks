@@ -11,7 +11,7 @@ import itertools
 dataset = sys.argv[1]
 
 # Read the data set into memory
-input_data = pd.read_csv(dataset, compression='gzip', sep='\t')
+input_data = pd.read_csv(dataset, compression='gzip', sep='\t').sample(frac=1., replace=False, random_state=42)
 
 for (loss, learning_rate, n_estimators,
      max_depth, max_features) in itertools.product(['deviance', 'exponential'],

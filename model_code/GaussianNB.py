@@ -11,7 +11,7 @@ import itertools
 dataset = sys.argv[1]
 
 # Read the data set into memory
-input_data = pd.read_csv(dataset, compression='gzip', sep='\t')
+input_data = pd.read_csv(dataset, compression='gzip', sep='\t').sample(frac=1., replace=False, random_state=42)
 
 features = input_data.drop('class', axis=1).values.astype(float)
 labels = input_data['class'].values

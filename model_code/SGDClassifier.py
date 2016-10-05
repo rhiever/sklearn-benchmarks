@@ -11,7 +11,7 @@ import itertools
 dataset = sys.argv[1]
 
 # Read the data set into memory
-input_data = pd.read_csv(dataset, compression='gzip', sep='\t')
+input_data = pd.read_csv(dataset, compression='gzip', sep='\t').sample(frac=1., replace=False, random_state=42)
 
 for (loss, penalty, alpha, learning_rate, fit_intercept, l1_ratio, eta0, power_t) in itertools.product(['hinge', 'log', 'modified_huber', 'squared_hinge', 'perceptron'],
                                                                                                        ['l2', 'l1', 'elasticnet'],

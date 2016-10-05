@@ -11,7 +11,7 @@ import itertools
 dataset = sys.argv[1]
 
 # Read the data set into memory
-input_data = pd.read_csv(dataset, compression='gzip', sep='\t')
+input_data = pd.read_csv(dataset, compression='gzip', sep='\t').sample(frac=1., replace=False, random_state=42)
 
 for (C, loss, penalty, dual, fit_intercept) in itertools.product(np.concatenate((np.arange(0., 1.0, 0.1),
                                                                                  np.arange(1., 10.01, 1.))),
