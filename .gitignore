@@ -67,3 +67,4 @@ data/*.gz
 
 #metafeature data
 notebooks/*.gz
+notebooks/*.csv
