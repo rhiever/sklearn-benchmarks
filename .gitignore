@@ -64,3 +64,6 @@ target/
 # Benchmark data files
 *.tmp
 data/*.gz
+
+#metafeature data
+notebooks/*.gz
