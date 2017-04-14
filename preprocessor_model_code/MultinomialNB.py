@@ -4,7 +4,15 @@ import numpy as np
 import itertools
 import warnings
 
-from sklearn.preprocessing import MinMaxScaler
+from sklearn.preprocessing import Binarizer, MaxAbsScaler, MinMaxScaler
+from sklearn.preprocessing import Normalizer, PolynomialFeatures, RobustScaler, StandardScaler
+from sklearn.decomposition import FastICA, PCA
+from sklearn.kernel_approximation import RBFSampler, Nystroem
+from sklearn.cluster import FeatureAgglomeration
+from sklearn.feature_selection import SelectFwe, SelectKBest, SelectPercentile, VarianceThreshold
+from sklearn.feature_selection import SelectFromModel, RFE
+from sklearn.ensemble import ExtraTreesClassifier
+
 from sklearn.naive_bayes import MultinomialNB
 from sklearn.model_selection import cross_val_predict
 from sklearn.metrics import accuracy_score, f1_score
@@ -14,20 +22,29 @@ import itertools
 
 dataset = sys.argv[1]
 
+preprocessor_list = [Binarizer(), MaxAbsScaler(), MinMaxScaler(), Normalizer(),
+                     PolynomialFeatures(), RobustScaler(), StandardScaler(),
+                     FastICA(), PCA(), RBFSampler(), Nystroem(), FeatureAgglomeration(),
+                     SelectFwe(), SelectKBest(), SelectPercentile(), VarianceThreshold(),
+                     SelectFromModel(estimator=ExtraTreesClassifier(n_estimators=100)),
+                     RFE(estimator=ExtraTreesClassifier(n_estimators=100))]
+
 # Read the data set into memory
 input_data = pd.read_csv(dataset, compression='gzip', sep='\t').sample(frac=1., replace=False, random_state=42)
 
 with warnings.catch_warnings():
     warnings.simplefilter('ignore')
 
-    for (alpha, fit_prior) in itertools.product([0., 0.1, 0.25, 0.5, 0.75, 1., 5., 10., 25., 50.],
-                                                [True, False]):
+    for (preprocessor, alpha, fit_prior) in itertools.product(
+                preprocessor_list,
+                [0., 0.1, 0.25, 0.5, 0.75, 1., 5., 10., 25., 50.],
+                [True, False]):
         features = input_data.drop('class', axis=1).values.astype(float)
         labels = input_data['class'].values
 
         try:
             # Create the pipeline for the model
-            clf = make_pipeline(MinMaxScaler(),
+            clf = make_pipeline(preprocessor,
                                 MultinomialNB(alpha=alpha,
                                               fit_prior=fit_prior))
             # 10-fold CV score for the pipeline
@@ -41,6 +58,7 @@ with warnings.catch_warnings():
             continue
 
         param_string = ''
+        param_string += 'preprocessor={},'.format(preprocessor.__class__.__name__)
         param_string += 'alpha={},'.format(alpha)
         param_string += 'fit_prior={}'.format(fit_prior)
 

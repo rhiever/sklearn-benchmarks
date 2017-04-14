@@ -35,10 +35,10 @@ with warnings.catch_warnings():
     warnings.simplefilter('ignore')
 
     for (preprocessor, alpha, fit_prior, binarize) in itertools.product(
-            preprocessor_list,
-            [0., 0.1, 0.25, 0.5, 0.75, 1., 5., 10., 25., 50.],
-            [True, False],
-            [0., 0.1, 0.25, 0.5, 0.75, 0.9, 1.]):
+                preprocessor_list,
+                [0., 0.1, 0.25, 0.5, 0.75, 1., 5., 10., 25., 50.],
+                [True, False],
+                [0., 0.1, 0.25, 0.5, 0.75, 0.9, 1.]):
         features = input_data.drop('class', axis=1).values.astype(float)
         labels = input_data['class'].values
 

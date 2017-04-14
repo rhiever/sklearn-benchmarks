@@ -4,7 +4,15 @@ import numpy as np
 import itertools
 import warnings
 
-from sklearn.preprocessing import StandardScaler
+from sklearn.preprocessing import Binarizer, MaxAbsScaler, MinMaxScaler
+from sklearn.preprocessing import Normalizer, PolynomialFeatures, RobustScaler, StandardScaler
+from sklearn.decomposition import FastICA, PCA
+from sklearn.kernel_approximation import RBFSampler, Nystroem
+from sklearn.cluster import FeatureAgglomeration
+from sklearn.feature_selection import SelectFwe, SelectKBest, SelectPercentile, VarianceThreshold
+from sklearn.feature_selection import SelectFromModel, RFE
+from sklearn.ensemble import ExtraTreesClassifier
+
 from sklearn.svm import SVC
 from sklearn.model_selection import cross_val_predict
 from sklearn.metrics import accuracy_score, f1_score
@@ -14,20 +22,29 @@ import itertools
 
 dataset = sys.argv[1]
 
+preprocessor_list = [Binarizer(), MaxAbsScaler(), MinMaxScaler(), Normalizer(),
+                     PolynomialFeatures(), RobustScaler(), StandardScaler(),
+                     FastICA(), PCA(), RBFSampler(), Nystroem(), FeatureAgglomeration(),
+                     SelectFwe(), SelectKBest(), SelectPercentile(), VarianceThreshold(),
+                     SelectFromModel(estimator=ExtraTreesClassifier(n_estimators=100)),
+                     RFE(estimator=ExtraTreesClassifier(n_estimators=100))]
+
 # Read the data set into memory
 input_data = pd.read_csv(dataset, compression='gzip', sep='\t').sample(frac=1., replace=False, random_state=42)
 
 with warnings.catch_warnings():
     warnings.simplefilter('ignore')
 
-    for (C, gamma) in itertools.product([0.01, 0.1, 0.5, 1., 10., 50., 100.],
-                                        [0.01, 0.1, 0.5, 1., 10., 50., 100., 'auto']):
+    for (preprocessor, C, gamma) in itertools.product(
+                preprocessor_list,
+                [0.01, 0.1, 0.5, 1., 10., 50., 100.],
+                [0.01, 0.1, 0.5, 1., 10., 50., 100., 'auto']):
         features = input_data.drop('class', axis=1).values.astype(float)
         labels = input_data['class'].values
 
         try:
             # Create the pipeline for the model
-            clf = make_pipeline(StandardScaler(),
+            clf = make_pipeline(preprocessor,
                                 SVC(C=C,
                                     gamma=gamma,
                                     kernel='rbf',
@@ -43,6 +60,7 @@ with warnings.catch_warnings():
             continue
 
         param_string = ''
+        param_string += 'preprocessor={},'.format(preprocessor.__class__.__name__)
         param_string += 'C={},'.format(C)
         param_string += 'gamma={},'.format(gamma)
         param_string += 'kernel=rbf,'

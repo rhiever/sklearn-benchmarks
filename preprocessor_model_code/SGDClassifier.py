@@ -4,7 +4,15 @@ import numpy as np
 import itertools
 import warnings
 
-from sklearn.preprocessing import StandardScaler
+from sklearn.preprocessing import Binarizer, MaxAbsScaler, MinMaxScaler
+from sklearn.preprocessing import Normalizer, PolynomialFeatures, RobustScaler, StandardScaler
+from sklearn.decomposition import FastICA, PCA
+from sklearn.kernel_approximation import RBFSampler, Nystroem
+from sklearn.cluster import FeatureAgglomeration
+from sklearn.feature_selection import SelectFwe, SelectKBest, SelectPercentile, VarianceThreshold
+from sklearn.feature_selection import SelectFromModel, RFE
+from sklearn.ensemble import ExtraTreesClassifier
+
 from sklearn.linear_model import SGDClassifier
 from sklearn.model_selection import cross_val_predict
 from sklearn.metrics import accuracy_score, f1_score
@@ -14,20 +22,30 @@ import itertools
 
 dataset = sys.argv[1]
 
+preprocessor_list = [Binarizer(), MaxAbsScaler(), MinMaxScaler(), Normalizer(),
+                     PolynomialFeatures(), RobustScaler(), StandardScaler(),
+                     FastICA(), PCA(), RBFSampler(), Nystroem(), FeatureAgglomeration(),
+                     SelectFwe(), SelectKBest(), SelectPercentile(), VarianceThreshold(),
+                     SelectFromModel(estimator=ExtraTreesClassifier(n_estimators=100)),
+                     RFE(estimator=ExtraTreesClassifier(n_estimators=100))]
+
 # Read the data set into memory
 input_data = pd.read_csv(dataset, compression='gzip', sep='\t').sample(frac=1., replace=False, random_state=42)
 
 with warnings.catch_warnings():
     warnings.simplefilter('ignore')
 
-    for (loss, penalty, alpha, learning_rate, fit_intercept, l1_ratio, eta0, power_t) in itertools.product(['hinge', 'log', 'modified_huber', 'squared_hinge', 'perceptron'],
-                                                                                                           ['l2', 'l1', 'elasticnet'],
-                                                                                                           [0.000001, 0.00001, 0.0001, 0.001, 0.01],
-                                                                                                           ['constant', 'optimal', 'invscaling'],
-                                                                                                           [True, False],
-                                                                                                           [0., 0.1, 0.15, 0.25, 0.5, 0.75, 0.9, 1.],
-                                                                                                           [0.01, 0.1, 0.5, 1., 10., 50., 100.],
-                                                                                                           [0., 0.1, 0.5, 1., 10., 50., 100.]):
+    for (preprocessor, loss, penalty, alpha, learning_rate,
+         fit_intercept, l1_ratio, eta0, power_t) in itertools.product(
+                preprocessor_list,
+                ['hinge', 'log', 'modified_huber', 'squared_hinge', 'perceptron'],
+                ['l2', 'l1', 'elasticnet'],
+                [0.000001, 0.00001, 0.0001, 0.001, 0.01],
+                ['constant', 'optimal', 'invscaling'],
+                [True, False],
+                [0., 0.1, 0.15, 0.25, 0.5, 0.75, 0.9, 1.],
+                [0.01, 0.1, 0.5, 1., 10., 50., 100.],
+                [0., 0.1, 0.5, 1., 10., 50., 100.]):
         if penalty != 'elasticnet' and l1_ratio != 0.15:
             continue
 
@@ -42,7 +60,7 @@ with warnings.catch_warnings():
 
         try:
             # Create the pipeline for the model
-            clf = make_pipeline(StandardScaler(),
+            clf = make_pipeline(preprocessor,
                                 SGDClassifier(loss=loss,
                                               penalty=penalty,
                                               alpha=alpha,
@@ -63,6 +81,7 @@ with warnings.catch_warnings():
             continue
 
         param_string = ''
+        param_string += 'preprocessor={},'.format(preprocessor.__class__.__name__)
         param_string += 'loss={},'.format(loss)
         param_string += 'penalty={},'.format(penalty)
         param_string += 'alpha={},'.format(alpha)
