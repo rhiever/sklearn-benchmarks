@@ -64,5 +64,4 @@ target/
 # Benchmark data files
 *.tmp
 
-
-*.gz
+data/*
