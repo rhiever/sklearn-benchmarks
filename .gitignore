@@ -67,3 +67,5 @@ target/
 data/*
 
 notebooks/figs/*
+
+notebooks/sklearn-preprocessor-benchmark-data.tsv.gz
