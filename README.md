@@ -6,15 +6,7 @@ A centralized repository to report scikit-learn model performance across a varie
 
 ## Downloading the benchmark data
 
-Run the Python script provided with this repository to download the data for the benchmark.
-
-```
-python download_data.py
-```
-
-This script will take a while to download all of the data sets. You will need an internet connection to run the script.
-
-Please do not run the download script too frequently.
+Please refer to [PMLB](https://github.com/EpistasisLab/penn-ml-benchmarks) to gain access to the curated datasets from this study.
 
 ## Contributing
 
