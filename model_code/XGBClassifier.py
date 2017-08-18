@@ -3,7 +3,7 @@ import pandas as pd
 import numpy as np
 import itertools
 from sklearn.preprocessing import RobustScaler
-from xgboost import XGBClassifier
+from xgboost import XGBClassifier # Assumes XGBoost v0.6
 from evaluate_model import evaluate_model
 
 dataset = sys.argv[1]
