@@ -1,14 +1,14 @@
 import sys
 import itertools
 import pandas as pd
-from sklearn.model_selection import cross_val_predict
+from sklearn.model_selection import cross_val_predict, StratifiedKFold
 from sklearn.metrics import accuracy_score, f1_score
 from sklearn.pipeline import make_pipeline
 from tpot_metrics import balanced_accuracy_score
 import warnings
 
 def evaluate_model(dataset, pipeline_components, pipeline_parameters):
-    input_data = pd.read_csv(dataset, compression='gzip', sep='\t').sample(frac=1., replace=False, random_state=90483257)
+    input_data = pd.read_csv(dataset, compression='gzip', sep='\t')
     features = input_data.drop('class', axis=1).values.astype(float)
     labels = input_data['class'].values
 
@@ -30,13 +30,15 @@ def evaluate_model(dataset, pipeline_components, pipeline_parameters):
 
             try:
                 clf = make_pipeline(*pipeline)
-                cv_predictions = cross_val_predict(estimator=clf, X=features, y=labels, cv=10)
+                cv_predictions = cross_val_predict(estimator=clf, X=features, y=labels, cv=StratifiedKFold(n_splits=10, shuffle=True, random_state=90483257))
                 accuracy = accuracy_score(labels, cv_predictions)
                 macro_f1 = f1_score(labels, cv_predictions, average='macro')
                 balanced_accuracy = balanced_accuracy_score(labels, cv_predictions)
             except KeyboardInterrupt:
                 sys.exit(1)
-            except:
+            # This is a catch-all to make sure that the evaluation won't crash due to a bad parameter
+            # combination or bad data. Turn this off when debugging!
+            except Exception as e:
                 continue
 
             classifier_class = pipeline_components[-1]
