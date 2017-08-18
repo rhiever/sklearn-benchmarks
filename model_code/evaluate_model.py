@@ -8,7 +8,7 @@ from tpot_metrics import balanced_accuracy_score
 import warnings
 
 def evaluate_model(dataset, pipeline_components, pipeline_parameters):
-    input_data = pd.read_csv(dataset, compression='gzip', sep='\t').sample(frac=1., replace=False, random_state=42)
+    input_data = pd.read_csv(dataset, compression='gzip', sep='\t').sample(frac=1., replace=False, random_state=90483257)
     features = input_data.drop('class', axis=1).values.astype(float)
     labels = input_data['class'].values
 
