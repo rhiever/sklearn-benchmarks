@@ -6,8 +6,9 @@ from sklearn.metrics import accuracy_score, f1_score
 from sklearn.pipeline import make_pipeline
 from tpot_metrics import balanced_accuracy_score
 
+# TODO: Turn off warnings for production runs
+
 def evaluate_model(dataset, pipeline_components, pipeline_parameters):
-    # Read the data set into memory
     input_data = pd.read_csv(dataset, compression='gzip', sep='\t').sample(frac=1., replace=False, random_state=42)
     features = input_data.drop('class', axis=1).values.astype(float)
     labels = input_data['class'].values
@@ -26,7 +27,6 @@ def evaluate_model(dataset, pipeline_components, pipeline_parameters):
         
         try:
             clf = make_pipeline(*pipeline)
-            # 10-fold CV score for the pipeline
             cv_predictions = cross_val_predict(estimator=clf, X=features, y=labels, cv=10)
             accuracy = accuracy_score(labels, cv_predictions)
             macro_f1 = f1_score(labels, cv_predictions, average='macro')
