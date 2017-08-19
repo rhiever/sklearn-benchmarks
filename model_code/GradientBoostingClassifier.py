@@ -11,7 +11,7 @@ dataset = sys.argv[1]
 pipeline_components = [RobustScaler, GradientBoostingClassifier]
 pipeline_parameters = {}
 
-n_estimators_values = [10, 50, 100, 500, 1000]
+n_estimators_values = [10, 50, 100, 500]
 min_impurity_decrease_values = np.arange(0., 0.51, 0.05)
 max_features_values = [0.1, 0.25, 0.5, 0.75, 'sqrt', 'log2', None]
 learning_rate_values = [0.01, 0.1, 0.5, 1.0, 10.0, 50.0, 100.0]

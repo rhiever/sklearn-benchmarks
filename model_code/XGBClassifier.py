@@ -11,7 +11,7 @@ dataset = sys.argv[1]
 pipeline_components = [RobustScaler, XGBClassifier]
 pipeline_parameters = {}
 
-n_estimators_values = [10, 50, 100, 500, 1000]
+n_estimators_values = [10, 50, 100, 500]
 learning_rate_values = [0.01, 0.1, 0.5, 1.0, 10.0, 50.0, 100.0]
 gamma_values = np.arange(0., 0.51, 0.05)
 max_depth_values = [1, 2, 3, 4, 5, 10, 20, 50, None]

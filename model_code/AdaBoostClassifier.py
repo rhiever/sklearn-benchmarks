@@ -12,7 +12,7 @@ pipeline_components = [RobustScaler, AdaBoostClassifier]
 pipeline_parameters = {}
 
 learning_rate_values = [0.01, 0.1, 0.5, 1.0, 10.0, 50.0, 100.0]
-n_estimators_values = [10, 50, 100, 500, 1000]
+n_estimators_values = [10, 50, 100, 500]
 random_state = [324089]
 
 all_param_combinations = itertools.product(learning_rate_values, n_estimators_values, random_state)
