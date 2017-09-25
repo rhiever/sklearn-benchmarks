@@ -11,7 +11,7 @@ dataset = sys.argv[1]
 pipeline_components = [RobustScaler, DecisionTreeClassifier]
 pipeline_parameters = {}
 
-min_impurity_decrease_values = np.arange(0., 0.51, 0.05)
+min_impurity_decrease_values = np.arange(0., 0.05, 0.0025)
 max_features_values = [0.1, 0.25, 0.5, 0.75, 'sqrt', 'log2', None]
 criterion_values = ['gini', 'entropy']
 random_state = [324089]
