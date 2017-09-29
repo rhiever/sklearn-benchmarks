@@ -14,7 +14,7 @@ np.random.seed(random_seed)
 pipeline_components = [RobustScaler, XGBClassifier]
 pipeline_parameters = {}
 
-n_estimators_values = np.random.randint(low=50, high=1000, size=num_param_combinations)
+n_estimators_values = np.random.choice(list(range(50, 1001, 50)), size=num_param_combinations)
 learning_rate_values = np.random.uniform(low=1e-10, high=5., size=num_param_combinations)
 gamma_values = np.random.uniform(low=0., high=1., size=num_param_combinations)
 max_depth_values = np.random.choice(list(range(1, 51)) + [None], size=num_param_combinations)
