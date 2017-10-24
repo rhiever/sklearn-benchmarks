@@ -7,6 +7,10 @@ from sklearn.pipeline import make_pipeline
 from tpot_metrics import balanced_accuracy_score
 import warnings
 
+from tempfile import mkdtemp
+from shutil import rmtree
+from sklearn.externals.joblib import Memory
+
 def evaluate_model(dataset, pipeline_components, pipeline_parameters):
     input_data = pd.read_csv(dataset, compression='gzip', sep='\t')
     features = input_data.drop('class', axis=1).values.astype(float)
@@ -14,6 +18,10 @@ def evaluate_model(dataset, pipeline_components, pipeline_parameters):
 
     pipelines = [dict(zip(pipeline_parameters.keys(), list(parameter_combination)))
                  for parameter_combination in itertools.product(*pipeline_parameters.values())]
+
+    # Create a temporary folder to store the transformers of the pipeline
+    cachedir = mkdtemp()
+    memory = Memory(cachedir=cachedir, verbose=0)
 
     with warnings.catch_warnings():
         # Squash warning messages. Turn this off when debugging!
@@ -29,7 +37,7 @@ def evaluate_model(dataset, pipeline_components, pipeline_parameters):
                     pipeline.append(component())
 
             try:
-                clf = make_pipeline(*pipeline)
+                clf = make_pipeline(*pipeline, memory=memory)
                 cv_predictions = cross_val_predict(estimator=clf, X=features, y=labels, cv=StratifiedKFold(n_splits=10, shuffle=True, random_state=90483257))
                 accuracy = accuracy_score(labels, cv_predictions)
                 macro_f1 = f1_score(labels, cv_predictions, average='macro')
@@ -64,3 +72,6 @@ def evaluate_model(dataset, pipeline_components, pipeline_parameters):
 
             print(out_text)
             sys.stdout.flush()
+
+    # Delete the temporary cache before exiting
+    rmtree(cachedir)
