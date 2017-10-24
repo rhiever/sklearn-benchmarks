@@ -41,16 +41,26 @@ def evaluate_model(dataset, pipeline_components, pipeline_parameters):
             except Exception as e:
                 continue
 
+            preprocessor_class = pipeline_components[0]
+            
+            preprocessor_param_string = 'default'
+            
+            if preprocessor_class in pipe_parameters:
+                preprocessor_param_string = ','.join(['{}={}'.format(parameter, '|'.join([x.strip() for x in str(value).split(',')]))
+                                                     for parameter, value in pipe_parameters[preprocessor_class].items()])
+
             classifier_class = pipeline_components[-1]
             param_string = ','.join(['{}={}'.format(parameter, value)
                                     for parameter, value in pipe_parameters[classifier_class].items()])
 
             out_text = '\t'.join([dataset.split('/')[-1][:-7],
-                                classifier_class.__name__,
-                                param_string,
-                                str(accuracy),
-                                str(macro_f1),
-                                str(balanced_accuracy)])
+                                  preprocessor_class.__name__,
+                                  preprocessor_param_string,
+                                  classifier_class.__name__,
+                                  param_string,
+                                  str(accuracy),
+                                  str(macro_f1),
+                                  str(balanced_accuracy)])
 
             print(out_text)
             sys.stdout.flush()
